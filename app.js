@@ -1,5 +1,88 @@
 // FleetTrack Pro - Fleet Management & Slip OCR Controller
-// Real-world mining haulage ledger with dynamic theme support (Day / Night & Color Accents)
+// Bilingual English & Gujarati (ગુજરાતી) Mining Truck Fleet Ledger
+
+const TRANSLATIONS = {
+  en: {
+    langBtnText: 'ગુજરાતી',
+    navOps: 'Fleet Operations',
+    navTrips: 'Trip Register & Kharch',
+    navDiesel: 'Diesel Bunk & Expenses',
+    navBilling: 'Party Bills & WhatsApp',
+    navReports: 'Reports & WhatsApp',
+    navTrucks: 'Trucks & Drivers',
+    navSettings: 'Settings & Theme',
+    addDieselBtn: '+ Add Diesel',
+    manualTripBtn: '+ Manual Trip',
+    scanSlipBtn: '📸 Scan Slip (OCR Auto-Fill)',
+    boardTitle: 'MONTH INCOME & KHARCH SUMMARY',
+    tripsCount: 'Trips Recorded',
+    kpiIncome: 'TRIP INCOME',
+    kpiDiesel: 'DIESEL RS.',
+    kpiLoader: 'LOADER RS.',
+    kpiWb: 'WEIGHBRIDGE RS.',
+    kpiDriver: 'DRIVER RS.',
+    kpiMaint: 'MAINTENANCE RS.',
+    kpiProfit: 'NET PROFIT (BACHAT)',
+    repTabProfit: 'Monthly Profit & Kharch Statement',
+    repTabCompany: 'Company Haulage Statement',
+    repTabTruck: 'Truck & Diesel Performance',
+    repKpiRevenue: 'Total Freight Revenue',
+    repKpiKharch: 'Total Kharch (Expense)',
+    repKpiProfit: 'Net Bachat (Profit)',
+    repKpiTonnage: 'Delivered Weight',
+    repKpiTrips: 'Total Volume',
+    repSendWa: '💬 1-Click Send on WhatsApp',
+    repPrint: '🖨️ Print / Save PDF',
+    repExport: '📥 Export CSV',
+    repWaHeader: 'WhatsApp Report Dispatcher',
+    repWaSendNow: '📲 Send Now',
+    repWaCopy: '📋 Copy Text',
+    billTitle: '📄 Company-wise Freight Billing & 1-Click WhatsApp Statements',
+    billSelectCompany: 'Select Company / Party to Generate Bill:',
+    billSendWa: '💬 Send Bill to WhatsApp',
+    billPrint: '🖨️ Print Statement / PDF'
+  },
+  gu: {
+    langBtnText: 'English',
+    navOps: 'ફ્લીટ કામગીરી',
+    navTrips: 'ટ્રીપ રજીસ્ટર અને ખર્ચ',
+    navDiesel: 'ડીઝલ પંપ અને ખર્ચ',
+    navBilling: 'પાર્ટી બિલ અને વોટ્સએપ',
+    navReports: 'રિપોર્ટ્સ અને વોટ્સએપ',
+    navTrucks: 'ટ્રક્સ અને ડ્રાઈવર',
+    navSettings: 'સેટિંગ્સ અને થીમ',
+    addDieselBtn: '+ ડીઝલ એન્ટ્રી',
+    manualTripBtn: '+ નવી ટ્રીપ',
+    scanSlipBtn: '📸 સ્લીપ સ્કેન કરો (OCR)',
+    boardTitle: 'માસિક આવક અને ખર્ચ સમરી (સરવૈયું)',
+    tripsCount: 'ટ્રીપ નોંધાયેલ',
+    kpiIncome: 'કુલ ટ્રીપ આવક (ભાડું)',
+    kpiDiesel: 'ડીઝલ ખર્ચ',
+    kpiLoader: 'લોડર ખર્ચ',
+    kpiWb: 'કાંટા ખર્ચ (સ્લીપ)',
+    kpiDriver: 'ડ્રાઈવર ઉપાડ / ખર્ચ',
+    kpiMaint: 'મેન્ટેનન્સ ખર્ચ',
+    kpiProfit: 'ચોખ્ખી બચત (નફો)',
+    repTabProfit: 'માસિક નફો અને ખર્ચ સ્ટેટમેન્ટ',
+    repTabCompany: 'પાર્ટી મુજબ ભાડા સ્ટેટમેન્ટ',
+    repTabTruck: 'ટ્રક અને ડીઝલ કાર્યક્ષમતા',
+    repKpiRevenue: 'કુલ ભાડાની આવક',
+    repKpiKharch: 'કુલ ખર્ચ',
+    repKpiProfit: 'ચોખ્ખી બચત (નફો)',
+    repKpiTonnage: 'કુલ વજન (ટન)',
+    repKpiTrips: 'કુલ ટ્રીપ / ડીઝલ',
+    repSendWa: '💬 વોટ્સએપ પર મોકલો',
+    repPrint: '🖨️ પ્રિન્ટ / PDF ડાઉનલોડ',
+    repExport: '📥 એક્સેલ/CSV ડાઉનલોડ',
+    repWaHeader: 'વોટ્સએપ સ્ટેટમેન્ટ સેન્ટર',
+    repWaSendNow: '📲 મોકલો',
+    repWaCopy: '📋 કોપી કરો',
+    billTitle: '📄 કંપની વાઇઝ ભાડા બિલ અને વોટ્સએપ સ્ટેટમેન્ટ',
+    billSelectCompany: 'બિલ બનાવવા માટે પાર્ટી/કંપની પસંદ કરો:',
+    billSendWa: '💬 વોટ્સએપ પર બિલ મોકલો',
+    billPrint: '🖨️ બિલ પ્રિન્ટ / PDF'
+  }
+};
 
 const App = {
   currentView: 'trips',
@@ -10,6 +93,7 @@ const App = {
   activeWhatsAppPhone: '',
   themeMode: 'dark',
   themeAccent: 'amber',
+  currentLang: 'en',
 
   // Authentication State
   currentUser: null,
@@ -24,11 +108,151 @@ const App = {
   init: function() {
     this.db = FleetDB.get();
     this.initTheme();
+    this.initLanguage();
     this.initAuth();
     this.bindEvents();
     this.populateAutocompleteDatalists();
     this.renderCurrentView();
     this.updateBadges();
+  },
+
+  // --------------------------------------------------------------------------
+  // GUJARATI LANGUAGE & LOCALIZATION (i18n)
+  // --------------------------------------------------------------------------
+  initLanguage: function() {
+    const savedLang = localStorage.getItem('FLEET_LANG') || 'en';
+    this.currentLang = savedLang;
+    this.applyLanguage();
+  },
+
+  toggleLanguage: function() {
+    const nextLang = this.currentLang === 'en' ? 'gu' : 'en';
+    this.setLanguage(nextLang);
+  },
+
+  setLanguage: function(lang) {
+    this.currentLang = lang;
+    localStorage.setItem('FLEET_LANG', lang);
+    this.applyLanguage();
+    this.renderCurrentView();
+  },
+
+  applyLanguage: function() {
+    const lang = this.currentLang;
+    const isGu = lang === 'gu';
+    const dict = TRANSLATIONS[lang];
+
+    // Language toggle pill text
+    const langBtnText = document.getElementById('lang-btn-text');
+    if (langBtnText) langBtnText.innerText = dict.langBtnText;
+
+    // Sidebar navigation
+    const opsHeader = document.getElementById('nav-header-ops');
+    if (opsHeader) opsHeader.innerText = dict.navOps;
+
+    const navTrips = document.getElementById('lbl-nav-trips');
+    if (navTrips) navTrips.innerText = dict.navTrips;
+
+    const navDiesel = document.getElementById('lbl-nav-diesel');
+    if (navDiesel) navDiesel.innerText = dict.navDiesel;
+
+    const navBilling = document.getElementById('lbl-nav-billing');
+    if (navBilling) navBilling.innerText = dict.navBilling;
+
+    const navReports = document.getElementById('lbl-nav-reports');
+    if (navReports) navReports.innerText = dict.navReports;
+
+    const navTrucks = document.getElementById('lbl-nav-trucks');
+    if (navTrucks) navTrucks.innerText = dict.navTrucks;
+
+    const navSettings = document.getElementById('lbl-nav-settings');
+    if (navSettings) navSettings.innerText = dict.navSettings;
+
+    // Action buttons in topbar
+    const btnDiesel = document.getElementById('btn-lbl-diesel');
+    if (btnDiesel) btnDiesel.innerText = dict.addDieselBtn;
+
+    const btnManual = document.getElementById('btn-lbl-manual');
+    if (btnManual) btnManual.innerText = dict.manualTripBtn;
+
+    const btnOcr = document.getElementById('btn-lbl-ocr');
+    if (btnOcr) btnOcr.innerText = dict.scanSlipBtn;
+
+    // Board Title and KPI labels
+    const boardTitle = document.getElementById('ledger-month-title');
+    if (boardTitle) boardTitle.innerText = dict.boardTitle;
+
+    const lblIncome = document.getElementById('lbl-kpi-income');
+    if (lblIncome) lblIncome.innerText = dict.kpiIncome;
+
+    const lblDiesel = document.getElementById('lbl-kpi-diesel');
+    if (lblDiesel) lblDiesel.innerText = dict.kpiDiesel;
+
+    const lblLoader = document.getElementById('lbl-kpi-loader');
+    if (lblLoader) lblLoader.innerText = dict.kpiLoader;
+
+    const lblWb = document.getElementById('lbl-kpi-wb');
+    if (lblWb) lblWb.innerText = dict.kpiWb;
+
+    const lblDriver = document.getElementById('lbl-kpi-driver');
+    if (lblDriver) lblDriver.innerText = dict.kpiDriver;
+
+    const lblMaint = document.getElementById('lbl-kpi-maint');
+    if (lblMaint) lblMaint.innerText = dict.kpiMaint;
+
+    const lblProfit = document.getElementById('lbl-kpi-profit');
+    if (lblProfit) lblProfit.innerText = dict.kpiProfit;
+
+    // Reports Tabs
+    const tabProfit = document.getElementById('btn-rep-profit');
+    if (tabProfit) tabProfit.innerHTML = `<span>📊</span> ${dict.repTabProfit}`;
+
+    const tabComp = document.getElementById('btn-rep-company');
+    if (tabComp) tabComp.innerHTML = `<span>🏢</span> ${dict.repTabCompany}`;
+
+    const tabTruck = document.getElementById('btn-rep-truck');
+    if (tabTruck) tabTruck.innerHTML = `<span>🚛</span> ${dict.repTabTruck}`;
+
+    // Language selector card active state in settings
+    document.querySelectorAll('#lang-card-en, #lang-card-gu').forEach(el => el.classList.remove('active'));
+    const activeCard = document.getElementById(`lang-card-${lang}`);
+    if (activeCard) activeCard.classList.add('active');
+
+    this.updateViewHeadings();
+  },
+
+  updateViewHeadings: function() {
+    const title = document.getElementById('page-title');
+    const subtitle = document.getElementById('page-subtitle');
+    if (!title || !subtitle) return;
+    const isGu = this.currentLang === 'gu';
+
+    switch (this.currentView) {
+      case 'trips':
+        title.innerText = isGu ? 'ટ્રક ટ્રીપ રજીસ્ટર અને માસિક ખર્ચ' : 'Fleet Trip Register & Monthly Kharch';
+        subtitle.innerText = isGu ? 'કાંટા સ્લીપ ઓટો-OCR એન્ટ્રી • ડીઝલ અને ટ્રીપ આવક લેજર' : 'Weighment Slip Auto-OCR Entry • Diesel & Trip Income Ledger';
+        break;
+      case 'diesel':
+        title.innerText = isGu ? 'ડીઝલ પંપ અને ઇંધણ ખર્ચ' : 'Diesel Bunk & Fuel Expenses';
+        subtitle.innerText = isGu ? 'પંપ સ્લીપો, ડ્રાઈવર ડીઝલ હિસાબ અને માસિક વપરાશ' : 'Fuel station slips, driver diesel advances & monthly consumption';
+        break;
+      case 'billing':
+        title.innerText = isGu ? 'પાર્ટી મુજબ ભાડા બિલ અને વોટ્સએપ સ્ટેટમેન્ટ' : 'Party Freight Bills & WhatsApp Statements';
+        subtitle.innerText = isGu ? 'ALPHA MINERALS, BLUE PEAK વગેરે માટે ૧-ક્લિક બિલ સ્ટેટમેન્ટ' : '1-Click statement generation for ALPHA MINERALS, BLUE PEAK, CREST CEMENT, etc.';
+        break;
+      case 'reports':
+        title.innerText = isGu ? 'ફ્લીટ રિપોર્ટ્સ અને વોટ્સએપ સ્ટેટમેન્ટ સેન્ટર' : 'Fleet Reports & WhatsApp Statement Center';
+        subtitle.innerText = isGu ? '૧-ક્લિક માસિક નફો (બચત) સ્ટેટમેન્ટ અને વોટ્સએપ ડિસ્પેચ' : '1-Click Profitability Statements, Company Invoicing & WhatsApp Sharing';
+        break;
+      case 'trucks':
+        title.innerText = isGu ? 'ટ્રક વાહનો અને ડ્રાઈવર મેનેજમેન્ટ' : 'Fleet Vehicles & Driver Management';
+        subtitle.innerText = isGu ? 'ટ્રક રજીસ્ટ્રેશન GJ12XY9081, ખાલી વજન (ટેર), ડ્રાઈવર સંપર્ક અને સ્થિતિ' : 'Truck registration GJ12XY9081, tare weights, driver contacts & status';
+        break;
+      case 'settings':
+        title.innerText = isGu ? 'ટ્રાન્સપોર્ટર સેટિંગ્સ અને થીમ પસંદગી' : 'Transporter Settings & Theme Customization';
+        subtitle.innerText = isGu ? 'કલર થીમ (દિવસ/રાત મોડ), પેઢી પ્રોફાઇલ, દરો અને બેકઅપ' : 'Color theme (Day/Night mode), firm profile, standard rates & backup';
+        break;
+    }
   },
 
   // --------------------------------------------------------------------------
@@ -225,36 +449,7 @@ const App = {
     const activeView = document.getElementById(`view-${viewName}`);
     if (activeView) activeView.style.display = 'block';
 
-    const title = document.getElementById('page-title');
-    const subtitle = document.getElementById('page-subtitle');
-
-    switch (viewName) {
-      case 'trips':
-        title.innerText = 'Fleet Trip Register & Monthly Kharch';
-        subtitle.innerText = 'Weighment Slip Auto-OCR Entry • Diesel & Trip Income Ledger';
-        break;
-      case 'diesel':
-        title.innerText = 'Diesel Bunk & Fuel Expenses';
-        subtitle.innerText = 'Fuel station slips, driver diesel advances & monthly consumption';
-        break;
-      case 'billing':
-        title.innerText = 'Party Freight Bills & WhatsApp Statements';
-        subtitle.innerText = '1-Click statement generation for ALPHA MINERALS, BLUE PEAK, CREST CEMENT, etc.';
-        break;
-      case 'reports':
-        title.innerText = 'Fleet Reports & WhatsApp Statement Center';
-        subtitle.innerText = '1-Click Profitability Statements, Company Invoicing & WhatsApp Sharing';
-        break;
-      case 'trucks':
-        title.innerText = 'Fleet Vehicles & Driver Management';
-        subtitle.innerText = 'Truck registration GJ12XY9081, tare weights, driver contacts & status';
-        break;
-      case 'settings':
-        title.innerText = 'Transporter Settings & Theme Customization';
-        subtitle.innerText = 'Color theme (Day/Night mode), firm profile, standard rates & backup';
-        break;
-    }
-
+    this.updateViewHeadings();
     this.renderCurrentView();
   },
 
@@ -348,9 +543,57 @@ const App = {
     const tbody = document.getElementById('trips-table-body');
     if (!tbody) return;
 
+    const thead = document.getElementById('trips-table-head');
+    if (thead) {
+      if (this.currentLang === 'gu') {
+        thead.innerHTML = `
+          <tr>
+            <th>ક્રમ</th>
+            <th>તારીખ</th>
+            <th>પાર્ટીનું નામ</th>
+            <th>લોડિંગ સ્થળ</th>
+            <th>ખાલી કરવાનું સ્થળ</th>
+            <th>સ્લીપ નં. (ટિકિટ)</th>
+            <th>ટ્રક ટન (નેટ)</th>
+            <th>ટન ભાવ</th>
+            <th>કુલ રકમ</th>
+            <th>લોડર અને ₹</th>
+            <th>કાંટો અને ₹</th>
+            <th>ડીઝલ (લિટર અને ₹)</th>
+            <th>ડ્રાઈવર / મેન્ટેનન્સ</th>
+            <th>સ્લીપ ફોટો</th>
+            <th>એક્શન</th>
+          </tr>
+        `;
+      } else {
+        thead.innerHTML = `
+          <tr>
+            <th>NO</th>
+            <th>DATE</th>
+            <th>COMPANY NAME</th>
+            <th>LOADING ADDRESS</th>
+            <th>UNLOADING ADDRESS</th>
+            <th>SERIAL NO. (SLIP #)</th>
+            <th>TRUCK TON</th>
+            <th>TON RATE</th>
+            <th>TOTAL AMOUNT</th>
+            <th>LOADER & RS</th>
+            <th>WEIGHBRIDGE & RS</th>
+            <th>DIESEL (LTRS & RS)</th>
+            <th>DRIVER / MAINT</th>
+            <th>SLIP PHOTO</th>
+            <th>ACTIONS</th>
+          </tr>
+        `;
+      }
+    }
+
     const trips = this.getFilteredTrips();
     if (trips.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding:30px; color:var(--text-dim);">No trips found for selected filter. Click "📸 Scan Slip (OCR)" to add trips.</td></tr>`;
+      const emptyMsg = this.currentLang === 'gu'
+        ? 'પસંદ કરેલ ફિલ્ટરમાં કોઈ ટ્રીપ નથી. ટ્રીપ ઉમેરવા માટે "📸 સ્લીપ સ્કેન કરો (OCR)" પર ક્લિક કરો.'
+        : 'No trips found for selected filter. Click "📸 Scan Slip (OCR)" to add trips.';
+      tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding:30px; color:var(--text-dim);">${emptyMsg}</td></tr>`;
       return;
     }
 
@@ -739,13 +982,36 @@ const App = {
     const totalTonnage = trips.reduce((acc, t) => acc + (t.truckTon || 0), 0);
     const grandTotal = trips.reduce((acc, t) => acc + (t.totalAmount || 0), 0);
     const config = this.db.config;
+    const isGu = this.currentLang === 'gu';
 
     let itemsList = '';
     trips.forEach((t, i) => {
-      itemsList += `${i + 1}. Slip *#${t.serialNo}* (${t.date})\n   • Route: ${t.loadingAddress} → ${t.unloadingAddress}\n   • Net: *${t.truckTon.toFixed(2)} MT* @ ₹${t.tonRate} = *₹${t.totalAmount.toLocaleString('en-IN')}*\n`;
+      itemsList += isGu
+        ? `${i + 1}. સ્લીપ *#${t.serialNo}* (${t.date})\n   • રૂટ: ${t.loadingAddress} → ${t.unloadingAddress}\n   • વજન: *${t.truckTon.toFixed(2)} MT* @ ₹${t.tonRate} = *₹${t.totalAmount.toLocaleString('en-IN')}*\n`
+        : `${i + 1}. Slip *#${t.serialNo}* (${t.date})\n   • Route: ${t.loadingAddress} → ${t.unloadingAddress}\n   • Net: *${t.truckTon.toFixed(2)} MT* @ ₹${t.tonRate} = *₹${t.totalAmount.toLocaleString('en-IN')}*\n`;
     });
 
-    const msg = 
+    const msg = isGu ?
+`*${config.transporterName.toUpperCase()}*
+${config.headOffice}
+📞 ${config.phone}
+━━━━━━━━━━━━━━━━━━━━━━━
+📋 *ટ્રક ભાડા બિલ સ્ટેટમેન્ટ*
+*પાર્ટી / કંપની:* ${company}
+*ટ્રક નંબર:* ${config.defaultTruckNo}
+*તારીખ:* ${new Date().toLocaleDateString('en-IN')}
+━━━━━━━━━━━━━━━━━━━━━━━
+📦 *બિલ સારાંશ:*
+• કુલ ટ્રીપો: *${trips.length} Trips*
+• પહોંચાડેલ વજન: *${totalTonnage.toFixed(2)} MT*
+👉 *કુલ ચૂકવવાપાત્ર રકમ: ₹${grandTotal.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+📑 *કાંટા સ્લીપ વિગતો:*
+${itemsList}
+✅ તમામ કાંટા સ્લીપો પહોંચ સ્ટેમ્પ સાથે વેરિફાઇ કરેલ છે.
+
+કૃપા કરીને રકમ મંજૂર કરી પેમેન્ટ ચૂકવવા વિનંતી. આભાર!`
+:
 `*${config.transporterName.toUpperCase()}*
 ${config.headOffice}
 📞 ${config.phone}
@@ -1188,17 +1454,46 @@ Please confirm and clear payment. Thank you!`;
     const headOffice = config.headOffice || 'Plot No. 104, Industrial Mining Zone, Sector 4, Gandhidham';
     const phone = config.phone || '9876543210';
     const defaultTruckNo = config.defaultTruckNo || 'GJ12XY9081';
-    const monthText = this.reportMonth === 'ALL' ? 'Complete Fleet Statement' : `Month: ${this.reportMonth}`;
+    const isGu = this.currentLang === 'gu';
     let msg = '';
 
     if (this.reportType === 'profit') {
-      msg = 
+      if (isGu) {
+        msg = 
+`*${transporterName.toUpperCase()}*
+${headOffice}
+📞 સંપર્ક: ${phone}
+━━━━━━━━━━━━━━━━━━━━━━━
+📊 *માસિક આવક, ખર્ચ અને બચત સ્ટેટમેન્ટ*
+🗓️ *મહિનો:* ${this.reportMonth === 'ALL' ? 'સંપૂર્ણ રેકોર્ડ' : this.reportMonth}
+🚛 *ટ્રક નંબર:* ${defaultTruckNo}
+━━━━━━━━━━━━━━━━━━━━━━━
+📦 *કામગીરી સારાંશ:*
+• કુલ ટ્રીપો: *${trips.length} Trips*
+• પહોંચાડેલ વજન: *${totals.totalTonnage.toFixed(2)} MT*
+• કુલ ભાડાની આવક: *₹${totals.totalRevenue.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+
+📉 *ખર્ચ વિગત (સરવૈયું):*
+• ડીઝલ ખર્ચ: *₹${totals.totalDieselRs.toLocaleString('en-IN', {maximumFractionDigits:2})}* (${totals.totalDieselLtrs.toFixed(0)} લિટર)
+• કાંટા સ્લીપ ખર્ચ: *₹${totals.totalWbRs.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+• લોડર ખર્ચ: *₹${totals.totalLoaderRs.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+• ડ્રાઈવર ઉપાડ / ખર્ચ: *₹${totals.totalDriverRs.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+👉 *કુલ ખર્ચ: ₹${totals.totalKharch.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+💰 *ચોખ્ખી બચત (ચોખ્ખો નફો):*
+👉 *₹${totals.netProfit.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+નફા ટકાવારી: *${totals.totalRevenue > 0 ? ((totals.netProfit / totals.totalRevenue) * 100).toFixed(1) : 0}%*
+━━━━━━━━━━━━━━━━━━━━━━━
+ફ્લીટટ્રેક પ્રો પોર્ટલ
+તારીખ: ${new Date().toLocaleDateString('en-IN')}`;
+      } else {
+        msg = 
 `*${transporterName.toUpperCase()}*
 ${headOffice}
 📞 Contact: ${phone}
 ━━━━━━━━━━━━━━━━━━━━━━━
 📊 *MONTHLY BACHAT & KHARCH STATEMENT*
-🗓️ *${monthText}*
+🗓️ *${this.reportMonth === 'ALL' ? 'Complete Fleet Statement' : `Month: ${this.reportMonth}`}*
 🚛 *Truck Reg:* ${defaultTruckNo}
 ━━━━━━━━━━━━━━━━━━━━━━━
 📦 *PERFORMANCE HIGHLIGHTS:*
@@ -1219,24 +1514,48 @@ Profit Margin: *${totals.totalRevenue > 0 ? ((totals.netProfit / totals.totalRev
 ━━━━━━━━━━━━━━━━━━━━━━━
 Generated via FleetTrack Pro Portal
 Date: ${new Date().toLocaleDateString('en-IN')}`;
+      }
     } else if (this.reportType === 'company') {
-      const compName = this.reportCompany === 'ALL' ? 'All Companies' : this.reportCompany;
+      const compName = this.reportCompany === 'ALL' ? (isGu ? 'બધી કંપનીઓ' : 'All Companies') : this.reportCompany;
       let itemsList = '';
       trips.slice(0, 15).forEach((t, i) => {
-        itemsList += `${i + 1}. Slip *#${t.serialNo}* (${t.date})\n   • Route: ${t.loadingAddress} → ${t.unloadingAddress}\n   • Net: *${t.truckTon.toFixed(2)} MT* @ ₹${t.tonRate} = *₹${t.totalAmount.toLocaleString('en-IN')}*\n`;
+        itemsList += isGu
+          ? `${i + 1}. સ્લીપ *#${t.serialNo}* (${t.date})\n   • રૂટ: ${t.loadingAddress} → ${t.unloadingAddress}\n   • વજન: *${t.truckTon.toFixed(2)} MT* @ ₹${t.tonRate} = *₹${t.totalAmount.toLocaleString('en-IN')}*\n`
+          : `${i + 1}. Slip *#${t.serialNo}* (${t.date})\n   • Route: ${t.loadingAddress} → ${t.unloadingAddress}\n   • Net: *${t.truckTon.toFixed(2)} MT* @ ₹${t.tonRate} = *₹${t.totalAmount.toLocaleString('en-IN')}*\n`;
       });
       if (trips.length > 15) {
-        itemsList += `... and ${trips.length - 15} more trips recorded.\n`;
+        itemsList += isGu ? `... અને બીજી ${trips.length - 15} ટ્રીપો નોંધાયેલ છે.\n` : `... and ${trips.length - 15} more trips recorded.\n`;
       }
 
-      msg = 
+      if (isGu) {
+        msg = 
+`*${transporterName.toUpperCase()}*
+${headOffice}
+📞 સંપર્ક: ${phone}
+━━━━━━━━━━━━━━━━━━━━━━━
+🏢 *પાર્ટી ટ્રક ભાડા બિલ સ્ટેટમેન્ટ*
+🏢 *પાર્ટીનું નામ:* ${compName}
+🗓️ *મહિનો:* ${this.reportMonth === 'ALL' ? 'સંપૂર્ણ રેકોર્ડ' : this.reportMonth}
+🚛 *ટ્રક નંબર:* ${defaultTruckNo}
+━━━━━━━━━━━━━━━━━━━━━━━
+📋 *બિલ સારાંશ:*
+• કુલ ટ્રીપો: *${trips.length} Trips*
+• પહોંચાડેલ વજન: *${totals.totalTonnage.toFixed(2)} MT*
+👉 *કુલ ચૂકવવાપાત્ર રકમ: ₹${totals.totalRevenue.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+📑 *કાંટા સ્લીપ વિગતો:*
+${itemsList}
+✅ તમામ કાંટા સ્લીપો વજન અને પહોંચ સ્ટેમ્પ સાથે વેરિફાઇ કરેલ છે.
+કૃપા કરીને રકમ મંજૂર કરી પેમેન્ટ ચૂકવવા વિનંતી. આભાર!`;
+      } else {
+        msg = 
 `*${transporterName.toUpperCase()}*
 ${headOffice}
 📞 Contact: ${phone}
 ━━━━━━━━━━━━━━━━━━━━━━━
 🏢 *COMPANY FREIGHT BILL STATEMENT*
 🏢 *Party:* ${compName}
-🗓️ *${monthText}*
+🗓️ *Month:* ${this.reportMonth}
 🚛 *Truck Reg:* ${defaultTruckNo}
 ━━━━━━━━━━━━━━━━━━━━━━━
 📋 *BILLING SUMMARY:*
@@ -1248,15 +1567,37 @@ ${headOffice}
 ${itemsList}
 ✅ All electronic weighbridge slips verified with receiving stamps.
 Please review and clear pending payment. Thank you!`;
+      }
     } else if (this.reportType === 'truck') {
-      msg = 
+      if (isGu) {
+        msg = 
+`*${transporterName.toUpperCase()}*
+${headOffice}
+📞 સંપર્ક: ${phone}
+━━━━━━━━━━━━━━━━━━━━━━━
+🚛 *ટ્રક અને ડીઝલ કાર્યક્ષમતા રિપોર્ટ*
+🚛 *વાહન:* ${defaultTruckNo} (ડ્રાઈવર: રાજેશ કુમાર)
+🗓️ *મહિનો:* ${this.reportMonth === 'ALL' ? 'સંપૂર્ણ રેકોર્ડ' : this.reportMonth}
+━━━━━━━━━━━━━━━━━━━━━━━
+📊 *કાર્યક્ષમતા સારાંશ:*
+• કુલ ટ્રીપો: *${trips.length} Trips*
+• પહોંચાડેલ વજન: *${totals.totalTonnage.toFixed(2)} MT*
+• વપરાયેલ ડીઝલ: *${totals.totalDieselLtrs.toFixed(1)} લિટર*
+• ડીઝલ ખર્ચ: *₹${totals.totalDieselRs.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+• ભાડાની આવક: *₹${totals.totalRevenue.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+👉 *ચોખ્ખી બચત (ઇંધણ બાદ): ₹${(totals.totalRevenue - totals.totalDieselRs).toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+ફ્લીટટ્રેક પ્રો પોર્ટલ
+તારીખ: ${new Date().toLocaleDateString('en-IN')}`;
+      } else {
+        msg = 
 `*${transporterName.toUpperCase()}*
 ${headOffice}
 📞 Contact: ${phone}
 ━━━━━━━━━━━━━━━━━━━━━━━
 🚛 *TRUCK & DIESEL PERFORMANCE REPORT*
 🚛 *Vehicle:* ${defaultTruckNo} (Driver: Rajesh Kumar)
-🗓️ *${monthText}*
+🗓️ *Month:* ${this.reportMonth}
 ━━━━━━━━━━━━━━━━━━━━━━━
 📊 *EFFICIENCY SUMMARY:*
 • Completed Trips: *${trips.length} Trips*
@@ -1268,6 +1609,7 @@ ${headOffice}
 ━━━━━━━━━━━━━━━━━━━━━━━
 Generated via FleetTrack Pro
 Date: ${new Date().toLocaleDateString('en-IN')}`;
+      }
     }
 
     this.activeReportWhatsAppMessage = msg;

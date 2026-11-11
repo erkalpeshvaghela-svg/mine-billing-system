@@ -69,31 +69,31 @@
       </div>
 
       <nav class="nav-menu">
-        <div class="nav-header">Fleet Operations</div>
+        <div class="nav-header" id="nav-header-ops">Fleet Operations</div>
         <a class="nav-item active" data-view="trips">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          Trip Register & Kharch
+          <span class="nav-text" id="lbl-nav-trips">Trip Register & Kharch</span>
           <span class="nav-badge" id="badge-trips-count">0</span>
         </a>
         <a class="nav-item" data-view="diesel">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v18"/><path d="M13 10h4a2 2 0 0 1 2 2v8a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9a2 2 0 0 0-.6-1.4L20 5.2"/><circle cx="8" cy="8" r="2"/></svg>
-          Diesel Bunk & Expenses
+          <span class="nav-text" id="lbl-nav-diesel">Diesel Bunk & Expenses</span>
         </a>
         <a class="nav-item" data-view="billing">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          Party Bills & WhatsApp
+          <span class="nav-text" id="lbl-nav-billing">Party Bills & WhatsApp</span>
         </a>
         <a class="nav-item" data-view="reports">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          Reports & WhatsApp
+          <span class="nav-text" id="lbl-nav-reports">Reports & WhatsApp</span>
         </a>
         <a class="nav-item" data-view="trucks">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          Trucks & Drivers
+          <span class="nav-text" id="lbl-nav-trucks">Trucks & Drivers</span>
         </a>
         <a class="nav-item" data-view="settings">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          Settings & Theme
+          <span class="nav-text" id="lbl-nav-settings">Settings & Theme</span>
         </a>
       </nav>
 
@@ -125,6 +125,12 @@
           <p id="page-subtitle">Weighment Slip Auto-OCR Entry &bull; Diesel & Trip Income Ledger</p>
         </div>
         <div class="topbar-actions">
+          <!-- 1-Click Language Switcher (English / ગુજરાતી) -->
+          <button class="theme-toggle-btn" id="topbar-lang-btn" onclick="App.toggleLanguage()" title="Switch Language / ભાષા બદલો (English / ગુજરાતી)">
+            <span>🌐</span>
+            <span id="lang-btn-text">ગુજરાતી</span>
+          </button>
+
           <!-- 1-Click Topbar Theme Toggle Button -->
           <button class="theme-toggle-btn" id="topbar-theme-btn" onclick="App.toggleTheme()" title="Toggle Day / Night Mode">
             <span id="theme-btn-icon">☀️</span>
@@ -133,14 +139,14 @@
 
           <button class="btn btn-secondary btn-sm" onclick="App.openModal('modal-diesel')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v18"/></svg>
-            + Add Diesel
+            <span id="btn-lbl-diesel">+ Add Diesel</span>
           </button>
           <button class="btn btn-secondary btn-sm" onclick="App.openManualTripModal()">
-            + Manual Trip
+            <span id="btn-lbl-manual">+ Manual Trip</span>
           </button>
           <button class="btn btn-primary btn-sm" onclick="App.openOCRModal()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
-            📸 Scan Slip (OCR Auto-Fill)
+            <span id="btn-lbl-ocr">📸 Scan Slip (OCR Auto-Fill)</span>
           </button>
         </div>
       </header>
@@ -167,31 +173,31 @@
             </div>
             <div class="ledger-grid">
               <div class="ledger-cell income">
-                <div class="ledger-cell-label">TRIP INCOME</div>
+                <div class="ledger-cell-label" id="lbl-kpi-income">TRIP INCOME</div>
                 <div class="ledger-cell-value" id="kpi-trip-income">₹0.00</div>
               </div>
               <div class="ledger-cell">
-                <div class="ledger-cell-label">DIESEL RS.</div>
+                <div class="ledger-cell-label" id="lbl-kpi-diesel">DIESEL RS.</div>
                 <div class="ledger-cell-value" id="kpi-diesel-rs" style="color:var(--accent-rose);">₹0.00</div>
               </div>
               <div class="ledger-cell">
-                <div class="ledger-cell-label">LODER RS.</div>
+                <div class="ledger-cell-label" id="lbl-kpi-loader">LODER RS.</div>
                 <div class="ledger-cell-value" id="kpi-loader-rs">₹0.00</div>
               </div>
               <div class="ledger-cell">
-                <div class="ledger-cell-label">WIGHBRIG RS.</div>
+                <div class="ledger-cell-label" id="lbl-kpi-wb">WIGHBRIG RS.</div>
                 <div class="ledger-cell-value" id="kpi-weighbridge-rs">₹0.00</div>
               </div>
               <div class="ledger-cell">
-                <div class="ledger-cell-label">DRIVER RS.</div>
+                <div class="ledger-cell-label" id="lbl-kpi-driver">DRIVER RS.</div>
                 <div class="ledger-cell-value" id="kpi-driver-rs">₹0.00</div>
               </div>
               <div class="ledger-cell">
-                <div class="ledger-cell-label">MAINTENANCE RS.</div>
+                <div class="ledger-cell-label" id="lbl-kpi-maint">MAINTENANCE RS.</div>
                 <div class="ledger-cell-value" id="kpi-maint-rs">₹0.00</div>
               </div>
               <div class="ledger-cell highlight">
-                <div class="ledger-cell-label">NET PROFIT (BACHAT)</div>
+                <div class="ledger-cell-label" id="lbl-kpi-profit">NET PROFIT (BACHAT)</div>
                 <div class="ledger-cell-value" id="kpi-net-profit">₹0.00</div>
               </div>
             </div>
@@ -211,7 +217,7 @@
             </div>
             <div class="table-responsive">
               <table class="data-table">
-                <thead>
+                <thead id="trips-table-head">
                   <tr>
                     <th>NO</th>
                     <th>DATE</th>
@@ -247,7 +253,7 @@
             </div>
             <div class="table-responsive">
               <table class="data-table">
-                <thead>
+                <thead id="trips-table-head">
                   <tr>
                     <th>Date</th>
                     <th>Truck Reg No</th>
@@ -454,7 +460,7 @@
             </div>
             <div class="table-responsive">
               <table class="data-table">
-                <thead>
+                <thead id="trips-table-head">
                   <tr>
                     <th>Truck Reg No</th>
                     <th>Vehicle Model</th>
@@ -510,6 +516,29 @@
                     <div class="accent-swatch" id="swatch-emerald" style="background:#10b981;" onclick="App.setAccent('emerald')" title="Fleet Emerald Green"></div>
                     <div class="accent-swatch" id="swatch-blue" style="background:#2563eb;" onclick="App.setAccent('blue')" title="Commercial Blue"></div>
                     <div class="accent-swatch" id="swatch-orange" style="background:#ea580c;" onclick="App.setAccent('orange')" title="Safety Orange"></div>
+                  </div>
+                </div>
+
+                <div style="margin-top:16px;">
+                  <label class="form-label">Language / ભાષા પસંદ કરો</label>
+                  <div class="theme-picker-grid">
+                    <div class="theme-card-option" id="lang-card-en" onclick="App.setLanguage('en')">
+                      <div style="font-weight:700; color:var(--text-main); font-size:13px; display:flex; align-items:center; gap:6px;">
+                        <span>🇬🇧</span> English
+                      </div>
+                      <div style="font-size:11px; color:var(--text-muted);">
+                        Standard English labels & reports
+                      </div>
+                    </div>
+
+                    <div class="theme-card-option" id="lang-card-gu" onclick="App.setLanguage('gu')">
+                      <div style="font-weight:700; color:var(--text-main); font-size:13px; display:flex; align-items:center; gap:6px;">
+                        <span>🇮🇳</span> ગુજરાતી (Gujarati)
+                      </div>
+                      <div style="font-size:11px; color:var(--text-muted);">
+                        સંપૂર્ણ ગુજરાતી ભાષા અને વોટ્સએપ રિપોર્ટ
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
