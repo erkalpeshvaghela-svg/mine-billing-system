@@ -58,14 +58,21 @@
   </div>
 
   <div class="app-container">
+    <!-- Mobile Backdrop -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="App.closeSidebar()"></div>
+
     <!-- Sidebar Navigation -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="app-sidebar">
       <div class="brand">
         <div class="brand-icon">🚛</div>
-        <div>
+        <div style="flex:1; min-width:0;">
           <div class="brand-title">FleetTrack Pro</div>
           <div class="brand-sub">Mining Fleet & Diesel Ledger</div>
         </div>
+        <!-- Hide / Collapse Arrow Button inside Sidebar -->
+        <button type="button" class="sidebar-close-btn" id="sidebar-close-btn" onclick="App.toggleSidebar()" title="Hide Sidebar / સાઇડબાર છુપાવો">
+          ◀
+        </button>
       </div>
 
       <nav class="nav-menu">
@@ -120,9 +127,15 @@
     <!-- Main Content Wrapper -->
     <main class="main-wrapper">
       <header class="topbar">
-        <div class="page-info">
-          <h1 id="page-title">Fleet Trip Register & Monthly Kharch</h1>
-          <p id="page-subtitle">Weighment Slip Auto-OCR Entry &bull; Diesel & Trip Income Ledger</p>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <!-- 1-Click Sidebar Toggle / Hide Arrow Button -->
+          <button type="button" class="sidebar-toggle-btn" id="sidebar-toggle-btn" onclick="App.toggleSidebar()" title="Toggle Sidebar Menu / સાઇડબાર ખોલો-બંધ કરો">
+            <span id="sidebar-toggle-icon">☰</span>
+          </button>
+          <div class="page-info">
+            <h1 id="page-title">Fleet Trip Register & Monthly Kharch</h1>
+            <p id="page-subtitle">Weighment Slip Auto-OCR Entry &bull; Diesel & Trip Income Ledger</p>
+          </div>
         </div>
         <div class="topbar-actions">
           <!-- 1-Click Language Switcher (English / ગુજરાતી) -->

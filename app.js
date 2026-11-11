@@ -256,6 +256,52 @@ const App = {
   },
 
   // --------------------------------------------------------------------------
+  // RESPONSIVE SIDEBAR & DRAWER MANAGEMENT
+  // --------------------------------------------------------------------------
+  sidebarCollapsed: false,
+  isMobileScreen: function() {
+    return window.innerWidth <= 768;
+  },
+
+  toggleSidebar: function() {
+    const sidebar = document.getElementById('app-sidebar');
+    if (!sidebar) return;
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    const closeBtn = document.getElementById('sidebar-close-btn');
+
+    if (this.isMobileScreen()) {
+      // Mobile Drawer Mode
+      const isOpen = sidebar.classList.contains('mobile-open');
+      if (isOpen) {
+        sidebar.classList.remove('mobile-open');
+        backdrop?.classList.remove('active');
+        if (toggleIcon) toggleIcon.innerText = '☰';
+      } else {
+        sidebar.classList.add('mobile-open');
+        backdrop?.classList.add('active');
+        if (toggleIcon) toggleIcon.innerText = '✕';
+      }
+    } else {
+      // Desktop Collapse / Expand Mode
+      const isCollapsed = sidebar.classList.toggle('desktop-collapsed');
+      this.sidebarCollapsed = isCollapsed;
+      if (toggleIcon) toggleIcon.innerText = isCollapsed ? '▶' : '☰';
+      if (closeBtn) closeBtn.innerText = isCollapsed ? '▶' : '◀';
+    }
+  },
+
+  closeSidebar: function() {
+    const sidebar = document.getElementById('app-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const toggleIcon = document.getElementById('sidebar-toggle-icon');
+
+    sidebar?.classList.remove('mobile-open');
+    backdrop?.classList.remove('active');
+    if (toggleIcon && this.isMobileScreen()) toggleIcon.innerText = '☰';
+  },
+
+  // --------------------------------------------------------------------------
   // THEME & APPEARANCE MANAGEMENT
   // --------------------------------------------------------------------------
   initTheme: function() {
@@ -434,6 +480,18 @@ const App = {
     if (ocrDate) ocrDate.value = today;
     const dslDate = document.getElementById('dsl-date');
     if (dslDate) dslDate.value = today;
+
+    // Window resize handler for mobile responsiveness
+    window.addEventListener('resize', () => {
+      if (!this.isMobileScreen()) {
+        const sidebar = document.getElementById('app-sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        sidebar?.classList.remove('mobile-open');
+        backdrop?.classList.remove('active');
+        const toggleIcon = document.getElementById('sidebar-toggle-icon');
+        if (toggleIcon) toggleIcon.innerText = this.sidebarCollapsed ? '▶' : '☰';
+      }
+    });
   },
 
   switchView: function(viewName) {
@@ -448,6 +506,11 @@ const App = {
 
     const activeView = document.getElementById(`view-${viewName}`);
     if (activeView) activeView.style.display = 'block';
+
+    // Auto-close sidebar on mobile after selecting a view
+    if (this.isMobileScreen()) {
+      this.closeSidebar();
+    }
 
     this.updateViewHeadings();
     this.renderCurrentView();
