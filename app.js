@@ -260,7 +260,7 @@ const App = {
   // --------------------------------------------------------------------------
   sidebarCollapsed: false,
   isMobileScreen: function() {
-    return window.innerWidth <= 768;
+    return window.innerWidth <= 900;
   },
 
   toggleSidebar: function() {
@@ -271,12 +271,10 @@ const App = {
     const closeBtn = document.getElementById('sidebar-close-btn');
 
     if (this.isMobileScreen()) {
-      // Mobile Drawer Mode
+      // Mobile / Tablet Drawer Mode
       const isOpen = sidebar.classList.contains('mobile-open');
       if (isOpen) {
-        sidebar.classList.remove('mobile-open');
-        backdrop?.classList.remove('active');
-        if (toggleIcon) toggleIcon.innerText = '☰';
+        this.hideSidebar();
       } else {
         sidebar.classList.add('mobile-open');
         backdrop?.classList.add('active');
@@ -291,14 +289,29 @@ const App = {
     }
   },
 
-  closeSidebar: function() {
+  hideSidebar: function() {
     const sidebar = document.getElementById('app-sidebar');
     const backdrop = document.getElementById('sidebar-backdrop');
     const toggleIcon = document.getElementById('sidebar-toggle-icon');
+    const closeBtn = document.getElementById('sidebar-close-btn');
 
+    // Dismiss mobile drawer & backdrop
     sidebar?.classList.remove('mobile-open');
     backdrop?.classList.remove('active');
-    if (toggleIcon && this.isMobileScreen()) toggleIcon.innerText = '☰';
+
+    if (this.isMobileScreen()) {
+      if (toggleIcon) toggleIcon.innerText = '☰';
+    } else {
+      // On desktop, collapse the sidebar
+      sidebar?.classList.add('desktop-collapsed');
+      this.sidebarCollapsed = true;
+      if (toggleIcon) toggleIcon.innerText = '▶';
+      if (closeBtn) closeBtn.innerText = '▶';
+    }
+  },
+
+  closeSidebar: function() {
+    this.hideSidebar();
   },
 
   // --------------------------------------------------------------------------

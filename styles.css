@@ -216,8 +216,12 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(0, 0, 0, 0.65);
+  -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
   z-index: 190;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .sidebar-backdrop.active {
   display: block;
@@ -228,8 +232,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -238,6 +242,8 @@ body {
   font-size: 16px;
   transition: all 0.15s ease;
   flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .sidebar-toggle-btn:hover {
   background-color: var(--bg-hover);
@@ -250,17 +256,21 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   color: var(--text-muted);
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 700;
   transition: all 0.15s ease;
   flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.sidebar-close-btn:hover {
+.sidebar-close-btn:hover,
+.sidebar-close-btn:active {
   color: var(--accent-gold);
   border-color: var(--accent-gold);
   background-color: var(--bg-hover);
@@ -274,9 +284,10 @@ body {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  z-index: 50;
+  z-index: 200;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.25s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
+.sidebar.collapsed,
 .sidebar.desktop-collapsed {
   margin-left: -250px;
 }
@@ -1149,7 +1160,7 @@ body {
 }
 
 /* Mobile & Responsive Rules */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .sidebar {
     position: fixed;
     top: 0;
