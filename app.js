@@ -2480,12 +2480,22 @@ Generated via FleetTrack Pro`;
   },
 
   openModal: function(modalId) {
+    this.closeModals();
     const el = document.getElementById(modalId);
-    if (el) el.classList.add('active');
+    if (el) {
+      el.classList.add('active');
+      // Reset scroll position to top
+      el.scrollTop = 0;
+      const content = el.querySelector('.modal-content');
+      if (content) content.scrollTop = 0;
+      // Prevent background page body scroll while modal is active
+      document.body.style.overflow = 'hidden';
+    }
   },
 
   closeModals: function() {
     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    document.body.style.overflow = '';
   }
 };
 
