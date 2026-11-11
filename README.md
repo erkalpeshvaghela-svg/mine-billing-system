@@ -1,35 +1,34 @@
-# 🚛 FleetTrack Pro - Mining Truck Fleet, Diesel & Weighment Slip OCR
+# 🚛 FleetTrack Pro - Mining Truck Fleet & Diesel Expense Ledger
 
-**FleetTrack Pro** is built directly from your actual fleet spreadsheet and Shree Weighbridge slips (`GJ39TB1972`).
+**FleetTrack Pro** is a zero-dependency, pure frontend mining haulage and fleet billing portal with automated Weighment Slip OCR data entry, diesel tracking, and 1-click WhatsApp statements.
 
-It focuses 100% on:
-1. **Fleet Trip Register**: Tracks daily trips by Company, Loading & Unloading Address, Serial #, Truck Ton, Ton Rate, and Total Amount.
-2. **Monthly Income & Kharch Ledger**: Real-time aggregation of **Trip Income, Diesel Rs, Loader Rs, Weighbridge Rs (₹100), Driver Rs, Maintenance Rs, and Net Profit (Bachat)**.
-3. **Weighment Slip Auto-Entry (OCR)**: Scans any weighbridge ticket photo and auto-fills Serial #, Net Weight (MT), Vehicle #, Company, and Weighbridge name.
-4. **Data Entry Operator Flow**: The operator only fills the remaining route address and agreed Ton Rate; calculations are 100% automated.
-5. **Party Billing & 1-Click WhatsApp**: Select any company (GIMPEX, SWELL WELL, DABASIYA, etc.) to generate and send itemized WhatsApp bills.
-6. **🎨 Dynamic Theme Settings**:
-   - **1-Click Day / Night Toggle** on the topbar (`☀️ Light Mode` / `🌙 Dark Mode`).
-   - High-contrast **Light Mode** designed for daylight readability in truck cabins & office environments.
-   - Low-glare **Dark Mode** for night shifts.
-   - 4 selectable **Accent Colors**: Mining Gold/Amber (default), Fleet Emerald Green, Commercial Blue, and Safety Orange.
-   - Persistent theme memory in `localStorage`.
+## 🌟 Key Features
 
----
+1. **Role-Based Authentication**:
+   - **👑 Fleet Owner / Admin** (`admin` / `admin123`): Full access to net profit (Bachat), expenses, financial reports, and settings.
+   - **📋 Data Entry Operator** (`operator` / `1234`): Fast weighment slip OCR entry and diesel expense logging.
+2. **Weighment Slip Auto-OCR Entry**:
+   - Auto-extracts Serial/Ticket #, Truck Plate, Net Metric Tonnes (MT), Material, and Weighbridge Fee (₹100).
+   - Allows operator to complete Ton Rate, Diesel, and Driver advance.
+3. **Monthly Income & Kharch Ledger**:
+   - Trip Income = $\sum (\text{Truck Ton} \times \text{Ton Rate})$.
+   - Net Bachat (Profit) = $\text{Trip Income} - (\text{Diesel} + \text{Weighbridge} + \text{Loader} + \text{Driver})$.
+4. **Dedicated Reports & 1-Click WhatsApp Statement**:
+   - Instant WhatsApp formatted statements with bold figures, emojis, and itemized calculations.
+   - Send directly to client or partner WhatsApp in one click.
+5. **Day / Night Theme Modes & Color Accents**:
+   - High-contrast Light Mode for bright daylight cabin use; Low-glare Dark Mode for night shifts.
+6. **100% Client-Side & Zero-Setup**:
+   - Runs directly in any web browser without Node.js, Python, or external servers.
+   - Fully compatible with GitHub Pages hosting.
 
-## ⚡ 1-Click Go Workflow for Operator
+## 🚀 Running the App
 
-```mermaid
-flowchart LR
-    A["1. Upload or Snap Slip Photo<br/>(Shree Weighbridge Ticket)"] --> B["2. OCR Auto-Extracts<br/>(Ticket #, Net MT, Vehicle, Company, ₹100 WB)"]
-    B --> C["3. Operator Fills 2 Fields<br/>(Addresses & Ton Rate)"]
-    C --> D["4. Auto Total & Profit<br/>(Trip Income & Net Bachat)"]
-    D --> E["5. 1-Click WhatsApp Bill<br/>(Itemized Slips sent to Client)"]
-```
+Double-click `start-app.bat` or open `index.html` in your browser.
 
----
+## 📦 Deploying to GitHub Pages
 
-## 📂 Quick Launch
-
-* **Location**: `C:\Users\Kalpesh Vaghela\.gemini\antigravity\scratch\mine-billing-system\`
-* **To Open**: Double-click `start-app.bat` or open `index.html` in your browser.
+1. Create a public repository on GitHub (e.g. `mining-fleet-ledger`).
+2. Upload `index.html`, `styles.css`, `app.js`, `db.js`, `sample_weighment_slip.jpg`, and `README.md`.
+3. Enable GitHub Pages in **Settings &rarr; Pages** (Branch: `main`, `/root`).
+4. Live demo URL: `https://<username>.github.io/mining-fleet-ledger/`

@@ -624,8 +624,8 @@ const App = {
       <tr>
         <td style="font-weight:600;">${t.date}</td>
         <td style="font-weight:700; color:var(--text-main);">${t.truckNo}</td>
-        <td>Ramesh Yadav</td>
-        <td>Mandvi Fuel Station</td>
+        <td>Rajesh Kumar</td>
+        <td>Highway Fuel Bunk</td>
         <td style="font-weight:700;">${t.dieselLtrs} L</td>
         <td>₹${t.dieselRate}</td>
         <td style="font-weight:700; color:var(--accent-rose); font-size:13.5px;">₹${t.dieselTotal.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
@@ -1134,7 +1134,7 @@ Please confirm and clear payment. Thank you!`;
         `;
       } else if (this.reportType === 'truck') {
         if (titleEl) titleEl.innerText = `🚛 Truck Performance & Diesel Consumption (${this.reportMonth})`;
-        if (subEl) subEl.innerText = `Fleet vehicle GJ39TB1972 efficiency, fuel cost and earnings`;
+        if (subEl) subEl.innerText = `Fleet vehicle GJ12XY9081 efficiency, fuel cost and earnings`;
         thead.innerHTML = `
           <tr>
             <th>Date</th>
@@ -1184,10 +1184,10 @@ Please confirm and clear payment. Thank you!`;
 
   generateReportWhatsAppText: function(trips, totals) {
     const config = this.db.config || {};
-    const transporterName = config.transporterName || 'Om Shiv Shakti Transport';
-    const headOffice = config.headOffice || 'Survey No. 304, Vandh, Mandvi, Kutch';
-    const phone = config.phone || '8347726372';
-    const defaultTruckNo = config.defaultTruckNo || 'GJ39TB1972';
+    const transporterName = config.transporterName || 'Apex Mining & Logistics Services';
+    const headOffice = config.headOffice || 'Plot No. 104, Industrial Mining Zone, Sector 4, Gandhidham';
+    const phone = config.phone || '9876543210';
+    const defaultTruckNo = config.defaultTruckNo || 'GJ12XY9081';
     const monthText = this.reportMonth === 'ALL' ? 'Complete Fleet Statement' : `Month: ${this.reportMonth}`;
     let msg = '';
 
@@ -1246,7 +1246,7 @@ ${headOffice}
 ━━━━━━━━━━━━━━━━━━━━━━━
 📑 *WEIGHMENT SLIP DETAILS:*
 ${itemsList}
-✅ All Shree Weighbridge slips verified with receiving stamps.
+✅ All electronic weighbridge slips verified with receiving stamps.
 Please review and clear pending payment. Thank you!`;
     } else if (this.reportType === 'truck') {
       msg = 
@@ -1255,7 +1255,7 @@ ${headOffice}
 📞 Contact: ${phone}
 ━━━━━━━━━━━━━━━━━━━━━━━
 🚛 *TRUCK & DIESEL PERFORMANCE REPORT*
-🚛 *Vehicle:* ${defaultTruckNo} (Driver: Ramesh Yadav)
+🚛 *Vehicle:* ${defaultTruckNo} (Driver: Rajesh Kumar)
 🗓️ *${monthText}*
 ━━━━━━━━━━━━━━━━━━━━━━━
 📊 *EFFICIENCY SUMMARY:*
@@ -1303,9 +1303,9 @@ Date: ${new Date().toLocaleDateString('en-IN')}`;
     const sub = document.getElementById('report-table-sub')?.innerText || '';
     const tableHtml = document.getElementById('report-data-table')?.outerHTML || '';
     const config = this.db.config || {};
-    const transporterName = config.transporterName || 'Om Shiv Shakti Transport';
-    const headOffice = config.headOffice || 'Survey No. 304, Vandh, Mandvi, Kutch';
-    const phone = config.phone || '8347726372';
+    const transporterName = config.transporterName || 'Apex Mining & Logistics Services';
+    const headOffice = config.headOffice || 'Plot No. 104, Industrial Mining Zone, Sector 4, Gandhidham';
+    const phone = config.phone || '9876543210';
 
     const html = `
       <div style="font-family:Arial, sans-serif; padding:20px; color:#000;">
