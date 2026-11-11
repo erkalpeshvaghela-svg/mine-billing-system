@@ -202,6 +202,50 @@ const DEFAULT_FLEET_DATA = {
     // --- JANUARY 2026 DUMMY SAMPLES ---
     { id: 'JAN-01', serialNo: '42001', date: '2026-01-08', truckNo: 'GJ12XY9081', companyName: 'CREST CEMENT LTD', loadingAddress: 'STOCKYARD NORTH', unloadingAddress: 'PORT CARGO TERMINAL', truckTon: 42.50, tonRate: 220, totalAmount: 9350.00, loaderName: '', loaderRs: 0, weighbridgeName: 'APEX', weighbridgeRs: 100, dieselLtrs: 40.0, dieselRate: 92.50, dieselTotal: 3700.00, driverRs: 400, maintenanceRs: 0 },
     { id: 'JAN-02', serialNo: 'MAINT-01', date: '2026-01-18', truckNo: 'GJ12XY9081', companyName: 'FLEET MAINTENANCE', loadingAddress: 'CENTRAL WORKSHOP', unloadingAddress: 'PERIODIC SERVICE & FILTER CHANGE', truckTon: 0, tonRate: 0, totalAmount: 0, loaderName: '', loaderRs: 0, weighbridgeName: '', weighbridgeRs: 0, dieselLtrs: 0, dieselRate: 0, dieselTotal: 0, driverRs: 0, maintenanceRs: 4500, remarks: 'Scheduled 50,000 KM Mobil oil and air filter replacement' }
+  ],
+
+  // Client Payment Receipts & Settlement Ledger
+  payments: [
+    {
+      id: 'PAY-1001',
+      date: '2026-11-01',
+      companyName: 'ALPHA MINERALS CORP',
+      amount: 19920,
+      mode: 'Bank NEFT',
+      refNo: 'NEFT-HDFC-91823',
+      settlementType: 'slip_wise',
+      allocations: [
+        { tripId: 'JUN-01', slipNo: '48201', allocatedAmount: 9888 },
+        { tripId: 'FEB-01', slipNo: '44010', allocatedAmount: 10032 }
+      ],
+      remarks: 'Cleared June & Feb haulage slips via HDFC NetBanking'
+    },
+    {
+      id: 'PAY-1002',
+      date: '2026-11-02',
+      companyName: 'BLUE PEAK CERAMICS',
+      amount: 9225,
+      mode: 'Cheque',
+      refNo: 'CHQ-551029',
+      settlementType: 'slip_wise',
+      allocations: [
+        { tripId: 'OCT-03', slipNo: '49823', allocatedAmount: 9225 }
+      ],
+      remarks: 'Cheque cleared in Axis Bank account'
+    },
+    {
+      id: 'PAY-1003',
+      date: '2026-11-03',
+      companyName: 'DELTA BENTOCLAY',
+      amount: 10530,
+      mode: 'UPI',
+      refNo: 'UPI/40291882/ICICI',
+      settlementType: 'lump_sum',
+      allocations: [
+        { tripId: 'MAY-01', slipNo: '46110', allocatedAmount: 10530 }
+      ],
+      remarks: 'Lump-sum advance received on account via UPI'
+    }
   ]
 };
 
@@ -210,14 +254,21 @@ const FleetDB = {
   get: function() {
     try {
       const stored = localStorage.getItem(DB_KEY);
-      if (!stored) {
-        this.save(DEFAULT_FLEET_DATA);
-        return JSON.parse(JSON.stringify(DEFAULT_FLEET_DATA));
+      let data = stored ? JSON.parse(stored) : null;
+      if (!data) {
+        data = JSON.parse(JSON.stringify(DEFAULT_FLEET_DATA));
+        this.save(data);
       }
-      return JSON.parse(stored);
+      if (!data.payments) {
+        data.payments = JSON.parse(JSON.stringify(DEFAULT_FLEET_DATA.payments || []));
+      }
+      this.rebuildPaymentStatuses(data);
+      return data;
     } catch (e) {
       console.warn('Error reading from storage:', e);
-      return JSON.parse(JSON.stringify(DEFAULT_FLEET_DATA));
+      const fallback = JSON.parse(JSON.stringify(DEFAULT_FLEET_DATA));
+      this.rebuildPaymentStatuses(fallback);
+      return fallback;
     }
   },
 
@@ -236,9 +287,72 @@ const FleetDB = {
     return JSON.parse(JSON.stringify(DEFAULT_FLEET_DATA));
   },
 
+  rebuildPaymentStatuses: function(data) {
+    if (!data || !data.trips) return;
+    const payments = data.payments || [];
+
+    // Reset payment fields on all trips
+    data.trips.forEach(t => {
+      t.paidAmount = 0;
+      t.remainingBalance = t.totalAmount || 0;
+      t.paymentStatus = 'unpaid';
+    });
+
+    // 1. Process explicit slip allocations
+    payments.forEach(p => {
+      if (p.allocations && p.allocations.length > 0) {
+        p.allocations.forEach(a => {
+          const trip = data.trips.find(t => t.id === a.tripId || (t.serialNo && String(t.serialNo) === String(a.slipNo)));
+          if (trip) {
+            trip.paidAmount = (trip.paidAmount || 0) + Number(a.allocatedAmount || 0);
+          }
+        });
+      }
+    });
+
+    // 2. Process lump-sum / on-account payments without explicit allocations (FIFO allocation)
+    payments.forEach(p => {
+      if ((!p.allocations || p.allocations.length === 0) && p.amount > 0) {
+        let unallocated = Number(p.amount);
+        const companyTrips = data.trips
+          .filter(t => t.companyName === p.companyName && t.truckTon > 0)
+          .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+        for (const trip of companyTrips) {
+          if (unallocated <= 0) break;
+          const remainingOnTrip = Math.max(0, (trip.totalAmount || 0) - (trip.paidAmount || 0));
+          if (remainingOnTrip > 0) {
+            const allocateNow = Math.min(unallocated, remainingOnTrip);
+            trip.paidAmount = (trip.paidAmount || 0) + allocateNow;
+            unallocated -= allocateNow;
+          }
+        }
+      }
+    });
+
+    // 3. Finalize payment status and remaining balance
+    data.trips.forEach(t => {
+      if (!t.totalAmount || t.totalAmount <= 0) {
+        t.paymentStatus = 'paid';
+        t.remainingBalance = 0;
+        return;
+      }
+      t.paidAmount = Math.min(t.totalAmount, Math.round((t.paidAmount || 0) * 100) / 100);
+      t.remainingBalance = Math.max(0, Math.round((t.totalAmount - t.paidAmount) * 100) / 100);
+      if (t.remainingBalance <= 0.5) {
+        t.paymentStatus = 'paid';
+      } else if (t.paidAmount > 0.5) {
+        t.paymentStatus = 'partial';
+      } else {
+        t.paymentStatus = 'unpaid';
+      }
+    });
+  },
+
   addTrip: function(trip) {
     const data = this.get();
     data.trips.unshift(trip);
+    this.rebuildPaymentStatuses(data);
     this.save(data);
     return trip;
   },
@@ -248,6 +362,7 @@ const FleetDB = {
     const idx = data.trips.findIndex(t => t.id === id);
     if (idx !== -1) {
       data.trips[idx] = { ...data.trips[idx], ...updatedFields };
+      this.rebuildPaymentStatuses(data);
       this.save(data);
       return data.trips[idx];
     }
@@ -257,7 +372,64 @@ const FleetDB = {
   deleteTrip: function(id) {
     const data = this.get();
     data.trips = data.trips.filter(t => t.id !== id);
+    this.rebuildPaymentStatuses(data);
     this.save(data);
+  },
+
+  // Payment Management Methods
+  addPayment: function(payment) {
+    const data = this.get();
+    if (!data.payments) data.payments = [];
+    data.payments.unshift(payment);
+    this.rebuildPaymentStatuses(data);
+    this.save(data);
+    return payment;
+  },
+
+  deletePayment: function(id) {
+    const data = this.get();
+    if (!data.payments) return;
+    data.payments = data.payments.filter(p => p.id !== id);
+    this.rebuildPaymentStatuses(data);
+    this.save(data);
+  },
+
+  getPartySummary: function(companyName) {
+    const data = this.get();
+    const trips = (data.trips || []).filter(t => t.companyName === companyName && t.truckTon > 0);
+    const payments = (data.payments || []).filter(p => p.companyName === companyName);
+
+    const totalBilled = trips.reduce((sum, t) => sum + (t.totalAmount || 0), 0);
+    const totalReceived = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+    const balanceDue = Math.max(0, totalBilled - totalReceived);
+    const unpaidSlips = trips.filter(t => t.paymentStatus !== 'paid');
+
+    return {
+      companyName,
+      tripsCount: trips.length,
+      unpaidSlipsCount: unpaidSlips.length,
+      totalTonnage: trips.reduce((sum, t) => sum + (t.truckTon || 0), 0),
+      totalBilled,
+      totalReceived,
+      balanceDue,
+      status: balanceDue <= 0.5 ? 'cleared' : 'pending',
+      trips,
+      payments
+    };
+  },
+
+  getAllPartiesSummary: function() {
+    const data = this.get();
+    const companies = data.companies || [];
+    const allSet = new Set(companies);
+    (data.trips || []).forEach(t => { if (t.companyName) allSet.add(t.companyName); });
+
+    const list = Array.from(allSet)
+      .filter(c => c && c !== 'FLEET MAINTENANCE' && c !== 'DIESEL REFUEL')
+      .map(name => this.getPartySummary(name));
+
+    list.sort((a, b) => b.balanceDue - a.balanceDue);
+    return list;
   },
 
   exportJSON: function() {

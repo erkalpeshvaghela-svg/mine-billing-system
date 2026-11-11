@@ -7,7 +7,7 @@ const TRANSLATIONS = {
     navOps: 'Fleet Operations',
     navTrips: 'Trip Register & Kharch',
     navDiesel: 'Diesel Bunk & Expenses',
-    navBilling: 'Party Bills & WhatsApp',
+    navBilling: 'Party Ledger & Payments',
     navReports: 'Reports & WhatsApp',
     navTrucks: 'Trucks & Drivers',
     navSettings: 'Settings & Theme',
@@ -37,7 +37,7 @@ const TRANSLATIONS = {
     repWaHeader: 'WhatsApp Report Dispatcher',
     repWaSendNow: '📲 Send Now',
     repWaCopy: '📋 Copy Text',
-    billTitle: '📄 Company-wise Freight Billing & 1-Click WhatsApp Statements',
+    billTitle: '📄 Party Billing, Balances & Slip Settlement',
     billSelectCompany: 'Select Company / Party to Generate Bill:',
     billSendWa: '💬 Send Bill to WhatsApp',
     billPrint: '🖨️ Print Statement / PDF'
@@ -47,7 +47,7 @@ const TRANSLATIONS = {
     navOps: 'ફ્લીટ કામગીરી',
     navTrips: 'ટ્રીપ રજીસ્ટર અને ખર્ચ',
     navDiesel: 'ડીઝલ પંપ અને ખર્ચ',
-    navBilling: 'પાર્ટી બિલ અને વોટ્સએપ',
+    navBilling: 'પાર્ટી ખાતાવહી અને પેમેન્ટ',
     navReports: 'રિપોર્ટ્સ અને વોટ્સએપ',
     navTrucks: 'ટ્રક્સ અને ડ્રાઈવર',
     navSettings: 'સેટિંગ્સ અને થીમ',
@@ -77,7 +77,7 @@ const TRANSLATIONS = {
     repWaHeader: 'વોટ્સએપ સ્ટેટમેન્ટ સેન્ટર',
     repWaSendNow: '📲 મોકલો',
     repWaCopy: '📋 કોપી કરો',
-    billTitle: '📄 કંપની વાઇઝ ભાડા બિલ અને વોટ્સએપ સ્ટેટમેન્ટ',
+    billTitle: '📄 પાર્ટી ખાતાવહી, બાકી રકમ અને સ્લીપ સેટલમેન્ટ',
     billSelectCompany: 'બિલ બનાવવા માટે પાર્ટી/કંપની પસંદ કરો:',
     billSendWa: '💬 વોટ્સએપ પર બિલ મોકલો',
     billPrint: '🖨️ બિલ પ્રિન્ટ / PDF'
@@ -94,6 +94,10 @@ const App = {
   themeMode: 'dark',
   themeAccent: 'amber',
   currentLang: 'en',
+
+  // Billing & Payment Settlement State
+  billingSubtab: 'parties', // 'parties' | 'slips' | 'receipts'
+  settlementMode: 'slip_wise', // 'slip_wise' | 'lump_sum'
 
   // Authentication State
   currentUser: null,
@@ -169,6 +173,9 @@ const App = {
     if (navSettings) navSettings.innerText = dict.navSettings;
 
     // Action buttons in topbar
+    const btnPayment = document.getElementById('btn-lbl-payment');
+    if (btnPayment) btnPayment.innerText = isGu ? '+ પેમેન્ટ જમા' : '+ Receive Payment';
+
     const btnDiesel = document.getElementById('btn-lbl-diesel');
     if (btnDiesel) btnDiesel.innerText = dict.addDieselBtn;
 
@@ -202,6 +209,28 @@ const App = {
 
     const lblProfit = document.getElementById('lbl-kpi-profit');
     if (lblProfit) lblProfit.innerText = dict.kpiProfit;
+
+    const lblPendingBal = document.getElementById('lbl-kpi-pending-bal');
+    if (lblPendingBal) lblPendingBal.innerText = isGu ? 'ચોખ્ખી બાકી રકમ (લેવાની)' : 'PENDING DUES (બાકી)';
+
+    // Billing & Settlement View Labels
+    const bkpiBilled = document.getElementById('lbl-bkpi-billed');
+    if (bkpiBilled) bkpiBilled.innerText = isGu ? 'કુલ ટ્રાન્સપોર્ટ ભાડું' : 'TOTAL FREIGHT BILLED';
+    const bkpiRecv = document.getElementById('lbl-bkpi-received');
+    if (bkpiRecv) bkpiRecv.innerText = isGu ? 'કુલ જમા થયેલ પેમેન્ટ' : 'TOTAL PAYMENTS RECEIVED';
+    const bkpiPend = document.getElementById('lbl-bkpi-pending');
+    if (bkpiPend) bkpiPend.innerText = isGu ? 'ચોખ્ખી બાકી રકમ (લેવાની)' : 'OUTSTANDING BALANCE (બાકી)';
+    const bkpiSlips = document.getElementById('lbl-bkpi-unpaid-slips');
+    if (bkpiSlips) bkpiSlips.innerText = isGu ? 'બાકી / અંશતઃ સ્લીપો' : 'UNPAID / PARTIAL SLIPS';
+
+    const subtabParties = document.getElementById('lbl-subtab-parties');
+    if (subtabParties) subtabParties.innerText = isGu ? 'પાર્ટી બાકી રકમ ખાતાવહી' : 'Party Outstanding Ledger';
+    const subtabSlips = document.getElementById('lbl-subtab-slips');
+    if (subtabSlips) subtabSlips.innerText = isGu ? 'સ્લીપ મુજબ બિલ અને વોટ્સએપ' : 'Slip-wise Freight Billing & WhatsApp';
+    const subtabReceipts = document.getElementById('lbl-subtab-receipts');
+    if (subtabReceipts) subtabReceipts.innerText = isGu ? 'પેમેન્ટ જમા રસીદો' : 'Payment Receipts History';
+    const btnRecvPay = document.getElementById('lbl-btn-receive-pay');
+    if (btnRecvPay) btnRecvPay.innerText = isGu ? '+ પેમેન્ટ જમા કરો' : '+ Receive Payment';
 
     // Reports Tabs
     const tabProfit = document.getElementById('btn-rep-profit');
@@ -237,8 +266,8 @@ const App = {
         subtitle.innerText = isGu ? 'પંપ સ્લીપો, ડ્રાઈવર ડીઝલ હિસાબ અને માસિક વપરાશ' : 'Fuel station slips, driver diesel advances & monthly consumption';
         break;
       case 'billing':
-        title.innerText = isGu ? 'પાર્ટી મુજબ ભાડા બિલ અને વોટ્સએપ સ્ટેટમેન્ટ' : 'Party Freight Bills & WhatsApp Statements';
-        subtitle.innerText = isGu ? 'ALPHA MINERALS, BLUE PEAK વગેરે માટે ૧-ક્લિક બિલ સ્ટેટમેન્ટ' : '1-Click statement generation for ALPHA MINERALS, BLUE PEAK, CREST CEMENT, etc.';
+        title.innerText = isGu ? 'પાર્ટી ખાતાવહી, બાકી રકમ અને પેમેન્ટ સેટલમેન્ટ' : 'Party Outstanding Ledger & Slip Settlement';
+        subtitle.innerText = isGu ? 'ગ્રાહક વાઇઝ બાકી રકમ (ચોખ્ખી બાકી), સ્લીપ મુજબ સેટલમેન્ટ અને ૧-ક્લિક વોટ્સએપ સ્ટેટમેન્ટ' : 'Party-wise balance dues, slip-level allocation & 1-click WhatsApp payment reminders';
         break;
       case 'reports':
         title.innerText = isGu ? 'ફ્લીટ રિપોર્ટ્સ અને વોટ્સએપ સ્ટેટમેન્ટ સેન્ટર' : 'Fleet Reports & WhatsApp Statement Center';
@@ -633,6 +662,7 @@ const App = {
             <th>ટ્રક ટન (નેટ)</th>
             <th>ટન ભાવ</th>
             <th>કુલ રકમ</th>
+            <th>પેમેન્ટ</th>
             <th>લોડર અને ₹</th>
             <th>કાંટો અને ₹</th>
             <th>ડીઝલ (લિટર અને ₹)</th>
@@ -653,6 +683,7 @@ const App = {
             <th>TRUCK TON</th>
             <th>TON RATE</th>
             <th>TOTAL AMOUNT</th>
+            <th>PAYMENT</th>
             <th>LOADER & RS</th>
             <th>WEIGHBRIDGE & RS</th>
             <th>DIESEL (LTRS & RS)</th>
@@ -669,7 +700,7 @@ const App = {
       const emptyMsg = this.currentLang === 'gu'
         ? 'પસંદ કરેલ ફિલ્ટરમાં કોઈ ટ્રીપ નથી. ટ્રીપ ઉમેરવા માટે "📸 સ્લીપ સ્કેન કરો (OCR)" પર ક્લિક કરો.'
         : 'No trips found for selected filter. Click "📸 Scan Slip (OCR)" to add trips.';
-      tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; padding:30px; color:var(--text-dim);">${emptyMsg}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="16" style="text-align:center; padding:30px; color:var(--text-dim);">${emptyMsg}</td></tr>`;
       return;
     }
 
@@ -694,6 +725,15 @@ const App = {
           <td style="color:var(--text-muted);">${t.tonRate ? '₹' + t.tonRate : '-'}</td>
           <td style="font-weight:700; color:var(--accent-emerald); font-size:13px;">
             ${t.totalAmount ? '₹' + t.totalAmount.toLocaleString('en-IN', {maximumFractionDigits:2}) : '₹0'}
+          </td>
+          <td>
+            ${t.truckTon > 0 ? (
+              t.paymentStatus === 'paid'
+                ? `<span class="badge-status-paid" title="Payment Settled">✔ ${this.currentLang === 'gu' ? 'ચૂકતે' : 'Paid'}</span>`
+                : t.paymentStatus === 'partial'
+                ? `<span class="badge-status-partial" title="Partial Payment">⏳ ${this.currentLang === 'gu' ? 'અંશતઃ' : 'Partial'}<br><small style="font-size:10px;">₹${(t.remainingBalance || 0).toLocaleString('en-IN')}</small></span>`
+                : `<span class="badge-status-unpaid" title="Unpaid Due">✖ ${this.currentLang === 'gu' ? 'બાકી' : 'Unpaid'}</span>`
+            ) : `<span style="color:var(--text-dim);">-</span>`}
           </td>
           <td>
             ${t.loaderRs > 0 ? `<span style="font-size:11px; color:var(--text-muted);">${t.loaderName || ''}</span> <strong style="color:var(--accent-rose);">₹${t.loaderRs}</strong>` : '-'}
@@ -734,6 +774,20 @@ const App = {
 
     const totalKharch = dieselRs + loaderRs + weighbridgeRs + driverRs + maintRs;
     const netProfit = tripIncome - totalKharch;
+    const pendingBalance = trips.reduce((acc, t) => acc + (t.remainingBalance || 0), 0);
+
+    document.getElementById('kpi-trip-income').innerText = `₹${tripIncome.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+    document.getElementById('kpi-diesel-rs').innerText = `₹${dieselRs.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+    document.getElementById('kpi-loader-rs').innerText = `₹${loaderRs.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+    document.getElementById('kpi-weighbridge-rs').innerText = `₹${weighbridgeRs.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+    document.getElementById('kpi-driver-rs').innerText = `₹${driverRs.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+    document.getElementById('kpi-maint-rs').innerText = `₹${maintRs.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+    document.getElementById('kpi-net-profit').innerText = `₹${netProfit.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+
+    const kpiPendingBal = document.getElementById('kpi-pending-balance');
+    if (kpiPendingBal) {
+      kpiPendingBal.innerText = `₹${pendingBalance.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+    }
 
     document.getElementById('kpi-trip-income').innerText = `₹${tripIncome.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
     document.getElementById('kpi-diesel-rs').innerText = `₹${dieselRs.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
@@ -994,36 +1048,174 @@ const App = {
   },
 
   // --------------------------------------------------------------------------
-  // PARTY BILLING & 1-CLICK WHATSAPP STATEMENT
+  // PARTY BILLING, BALANCES LEDGER & SLIP SETTLEMENT ENGINE
   // --------------------------------------------------------------------------
   renderBillingView: function() {
     this.populateAutocompleteDatalists();
-    this.onBillingCompanyChange();
+    this.updateBillingKPICards();
+
+    if (this.billingSubtab === 'parties') {
+      this.renderPartyBalancesTable();
+    } else if (this.billingSubtab === 'slips') {
+      this.onBillingCompanyChange();
+    } else if (this.billingSubtab === 'receipts') {
+      this.renderPaymentReceiptsTable();
+    }
+  },
+
+  updateBillingKPICards: function() {
+    const data = this.db;
+    const trips = (data.trips || []).filter(t => t.truckTon > 0);
+    const payments = data.payments || [];
+
+    const totalBilled = trips.reduce((sum, t) => sum + (t.totalAmount || 0), 0);
+    const totalReceived = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+    const totalPending = Math.max(0, totalBilled - totalReceived);
+    const unpaidSlips = trips.filter(t => t.paymentStatus !== 'paid');
+
+    const elBilled = document.getElementById('bkpi-total-billed');
+    if (elBilled) elBilled.innerText = `₹${totalBilled.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+
+    const elRecv = document.getElementById('bkpi-total-received');
+    if (elRecv) elRecv.innerText = `₹${totalReceived.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+
+    const elPending = document.getElementById('bkpi-total-pending');
+    if (elPending) elPending.innerText = `₹${totalPending.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+
+    const elUnpaid = document.getElementById('bkpi-unpaid-slips-count');
+    if (elUnpaid) elUnpaid.innerText = `${unpaidSlips.length} Slips`;
+  },
+
+  switchBillingSubtab: function(tabName) {
+    this.billingSubtab = tabName;
+
+    // Toggle active pill classes
+    const btnParties = document.getElementById('tab-btn-parties');
+    const btnSlips = document.getElementById('tab-btn-slips');
+    const btnReceipts = document.getElementById('tab-btn-receipts');
+
+    btnParties?.classList.toggle('active', tabName === 'parties');
+    btnSlips?.classList.toggle('active', tabName === 'slips');
+    btnReceipts?.classList.toggle('active', tabName === 'receipts');
+
+    // Toggle subview sections
+    const secParties = document.getElementById('subview-party-ledger');
+    const secSlips = document.getElementById('subview-slip-billing');
+    const secReceipts = document.getElementById('subview-payment-receipts');
+
+    if (secParties) secParties.style.display = tabName === 'parties' ? 'block' : 'none';
+    if (secSlips) secSlips.style.display = tabName === 'slips' ? 'block' : 'none';
+    if (secReceipts) secReceipts.style.display = tabName === 'receipts' ? 'block' : 'none';
+
+    this.renderBillingView();
+  },
+
+  renderPartyBalancesTable: function() {
+    const tbody = document.getElementById('party-ledger-tbody');
+    if (!tbody) return;
+
+    const query = (document.getElementById('party-search-input')?.value || '').toLowerCase().trim();
+    let parties = FleetDB.getAllPartiesSummary();
+
+    if (query) {
+      parties = parties.filter(p => p.companyName.toLowerCase().includes(query));
+    }
+
+    if (parties.length === 0) {
+      const msg = this.currentLang === 'gu'
+        ? 'કોઈ પાર્ટી ખાતું મળ્યું નથી.'
+        : 'No customer accounts found.';
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-dim);">${msg}</td></tr>`;
+      return;
+    }
+
+    const isGu = this.currentLang === 'gu';
+
+    tbody.innerHTML = parties.map(p => {
+      const isCleared = p.balanceDue <= 0.5;
+      const statusBadge = isCleared
+        ? `<span class="badge-status-paid">✔ ${isGu ? 'કોઈ બાકી નથી' : 'All Cleared'}</span>`
+        : `<span class="badge-status-unpaid">⏳ ₹${p.balanceDue.toLocaleString('en-IN')} ${isGu ? 'બાકી' : 'Pending'} (${p.unpaidSlipsCount} ${isGu ? 'સ્લીપ' : 'Slips'})</span>`;
+
+      return `
+        <tr>
+          <td>
+            <div style="font-weight:700; color:var(--text-main); font-size:13.5px;">${p.companyName}</div>
+            <div style="font-size:11px; color:var(--text-dim);">${p.totalTonnage.toFixed(2)} MT ${isGu ? 'માલ પરિવહન' : 'Delivered'}</div>
+          </td>
+          <td style="text-align:center; font-weight:600;">${p.tripsCount}</td>
+          <td style="text-align:right; font-weight:700; color:var(--text-main);">₹${p.totalBilled.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+          <td style="text-align:right; font-weight:700; color:var(--accent-emerald);">₹${p.totalReceived.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+          <td style="text-align:right; font-weight:800; font-size:14px; color:${isCleared ? 'var(--text-muted)' : 'var(--accent-rose)'};">
+            ₹${p.balanceDue.toLocaleString('en-IN', {maximumFractionDigits:2})}
+          </td>
+          <td style="text-align:center;">${statusBadge}</td>
+          <td style="text-align:center; white-space:nowrap;">
+            <button class="btn btn-primary btn-sm" onclick="App.openPaymentModal('${p.companyName}')" title="${isGu ? 'પેમેન્ટ જમા કરો' : 'Receive Payment'}">
+              💰 ${isGu ? 'જમા' : 'Receive'}
+            </button>
+            <button class="btn btn-whatsapp btn-sm" onclick="App.generateWhatsAppPartyStatement('${p.companyName}')" title="${isGu ? 'વોટ્સએપ ખાતાવહી સ્ટેટમેન્ટ' : 'WhatsApp Statement'}">
+              💬 ${isGu ? 'સ્ટેટમેન્ટ' : 'Statement'}
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="App.viewCompanySlips('${p.companyName}')" title="${isGu ? 'કાંટા સ્લીપો જુઓ' : 'View Slips'}">
+              👁️ ${isGu ? 'સ્લીપ' : 'Slips'}
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  },
+
+  viewCompanySlips: function(companyName) {
+    const sel = document.getElementById('bill-company-select');
+    if (sel) sel.value = companyName;
+    this.switchBillingSubtab('slips');
   },
 
   onBillingCompanyChange: function() {
     const company = document.getElementById('bill-company-select')?.value;
+    const filter = document.getElementById('bill-status-filter')?.value || 'ALL';
     const tbody = document.getElementById('billing-statement-table');
     if (!tbody || !company) return;
 
-    const trips = this.db.trips.filter(t => t.companyName === company && t.truckTon > 0);
+    let trips = this.db.trips.filter(t => t.companyName === company && t.truckTon > 0);
+
+    if (filter === 'UNPAID') {
+      trips = trips.filter(t => t.paymentStatus !== 'paid');
+    } else if (filter === 'PAID') {
+      trips = trips.filter(t => t.paymentStatus === 'paid');
+    }
+
     if (trips.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-dim);">No unbilled trips found for ${company}.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:24px; color:var(--text-dim);">No trips matching filter for ${company}.</td></tr>`;
       this.recalcBillingTotals();
       return;
     }
 
-    tbody.innerHTML = trips.map(t => `
-      <tr>
-        <td><input type="checkbox" class="bill-row-cb" value="${t.id}" checked onchange="App.recalcBillingTotals()"></td>
-        <td>${t.date}</td>
-        <td style="font-weight:700; color:var(--accent-blue);">${t.serialNo}</td>
-        <td>${t.loadingAddress} &rarr; ${t.unloadingAddress}</td>
-        <td style="font-weight:700;">${t.truckTon.toFixed(2)} MT</td>
-        <td>₹${t.tonRate}</td>
-        <td style="font-weight:700; color:var(--accent-emerald);">₹${t.totalAmount.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
-      </tr>
-    `).join('');
+    const isGu = this.currentLang === 'gu';
+
+    tbody.innerHTML = trips.map(t => {
+      const statusBadge = t.paymentStatus === 'paid'
+        ? `<span class="badge-status-paid">✔ ${isGu ? 'ચૂકતે' : 'Paid'}</span>`
+        : t.paymentStatus === 'partial'
+        ? `<span class="badge-status-partial">⏳ ${isGu ? 'અંશતઃ' : 'Partial'}</span>`
+        : `<span class="badge-status-unpaid">✖ ${isGu ? 'બાકી' : 'Unpaid'}</span>`;
+
+      return `
+        <tr>
+          <td><input type="checkbox" class="bill-row-cb" value="${t.id}" data-due="${t.remainingBalance || 0}" checked onchange="App.recalcBillingTotals()"></td>
+          <td style="white-space:nowrap;">${t.date}</td>
+          <td style="font-weight:700; color:var(--accent-blue);">${t.serialNo}</td>
+          <td>${t.loadingAddress} &rarr; ${t.unloadingAddress}</td>
+          <td style="font-weight:700;">${t.truckTon.toFixed(2)} MT</td>
+          <td>₹${t.tonRate}</td>
+          <td style="font-weight:700; color:var(--text-main);">₹${t.totalAmount.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+          <td>${statusBadge}</td>
+          <td style="color:var(--accent-emerald); font-weight:600;">₹${(t.paidAmount || 0).toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+          <td style="font-weight:800; color:var(--accent-rose);">₹${(t.remainingBalance || 0).toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+        </tr>
+      `;
+    }).join('');
 
     this.recalcBillingTotals();
   },
@@ -1034,15 +1226,431 @@ const App = {
   },
 
   recalcBillingTotals: function() {
-    const checkedIds = Array.from(document.querySelectorAll('.bill-row-cb:checked')).map(cb => cb.value);
+    const checkedBoxes = Array.from(document.querySelectorAll('.bill-row-cb:checked'));
+    const checkedIds = checkedBoxes.map(cb => cb.value);
     const trips = this.db.trips.filter(t => checkedIds.includes(t.id));
 
     const totalTonnage = trips.reduce((acc, t) => acc + (t.truckTon || 0), 0);
     const grandTotal = trips.reduce((acc, t) => acc + (t.totalAmount || 0), 0);
+    const grandPending = trips.reduce((acc, t) => acc + (t.remainingBalance || 0), 0);
 
-    document.getElementById('bill-total-trips-count').innerText = `${trips.length} Trips`;
-    document.getElementById('bill-total-tonnage').innerText = `${totalTonnage.toFixed(2)} MT`;
-    document.getElementById('bill-grand-total').innerText = `₹${grandTotal.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+    const countEl = document.getElementById('bill-total-trips-count');
+    if (countEl) countEl.innerText = `${trips.length} Trips`;
+
+    const tonEl = document.getElementById('bill-total-tonnage');
+    if (tonEl) tonEl.innerText = `${totalTonnage.toFixed(2)} MT`;
+
+    const grandEl = document.getElementById('bill-grand-total');
+    if (grandEl) grandEl.innerText = `₹${grandTotal.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+
+    const pendEl = document.getElementById('bill-grand-pending');
+    if (pendEl) pendEl.innerText = `₹${grandPending.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+  },
+
+  renderPaymentReceiptsTable: function() {
+    const tbody = document.getElementById('payment-receipts-tbody');
+    if (!tbody) return;
+
+    const payments = this.db.payments || [];
+    if (payments.length === 0) {
+      const msg = this.currentLang === 'gu'
+        ? 'હજુ સુધી કોઈ પેમેન્ટ રસીદ નોંધાયેલ નથી.'
+        : 'No payment receipts recorded yet.';
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:30px; color:var(--text-dim);">${msg}</td></tr>`;
+      return;
+    }
+
+    const isGu = this.currentLang === 'gu';
+
+    tbody.innerHTML = payments.map(p => {
+      let settledInfo = '-';
+      if (p.allocations && p.allocations.length > 0) {
+        settledInfo = p.allocations.map(a => `Slip #${a.slipNo} (₹${Number(a.allocatedAmount).toLocaleString('en-IN')})`).join(', ');
+      } else if (p.settlementType === 'lump_sum') {
+        settledInfo = isGu ? 'ખાતા પેટે જમા (FIFO સેટલમેન્ટ)' : 'On-Account (FIFO Settled)';
+      }
+
+      return `
+        <tr>
+          <td style="font-weight:700; color:var(--accent-blue); font-family:var(--font-mono);">${p.id}</td>
+          <td style="white-space:nowrap;">${p.date}</td>
+          <td style="font-weight:700; color:var(--text-main);">${p.companyName}</td>
+          <td style="text-align:right; font-weight:800; font-size:13.5px; color:var(--accent-emerald);">₹${Number(p.amount).toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+          <td><span class="badge badge-gold">${p.mode || 'Bank'}</span></td>
+          <td style="font-family:var(--font-mono); font-size:11px;">${p.refNo || '-'}</td>
+          <td>
+            <span class="badge ${p.settlementType === 'slip_wise' ? 'badge-blue' : 'badge-emerald'}">
+              ${p.settlementType === 'slip_wise' ? (isGu ? 'સ્લીપ પસંદગી' : 'Slip-Wise') : (isGu ? 'એક સામટી' : 'Lump-Sum')}
+            </span>
+          </td>
+          <td style="font-size:11.5px; max-width:240px; color:var(--text-muted);">${settledInfo}</td>
+          <td style="font-size:11.5px; color:var(--text-dim); max-width:180px;">${p.remarks || '-'}</td>
+          <td style="text-align:center;">
+            <button class="btn btn-danger btn-sm" onclick="App.deletePayment('${p.id}')" title="${isGu ? 'રસીદ ડિલીટ કરો' : 'Delete Receipt'}">✕</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  },
+
+  // --------------------------------------------------------------------------
+  // RECEIVE PAYMENT & SLIP SETTLEMENT MODAL LOGIC
+  // --------------------------------------------------------------------------
+  openPaymentModal: function(preselectedCompany) {
+    const companySelect = document.getElementById('pay-company-select');
+    if (!companySelect) return;
+
+    const summaries = FleetDB.getAllPartiesSummary();
+
+    companySelect.innerHTML = summaries.map(s => {
+      const isDue = s.balanceDue > 0.5;
+      const dueLabel = isDue ? `(Pending: ₹${s.balanceDue.toLocaleString('en-IN')})` : '(No Due)';
+      return `<option value="${s.companyName}">${s.companyName} ${dueLabel}</option>`;
+    }).join('');
+
+    if (preselectedCompany && summaries.some(s => s.companyName === preselectedCompany)) {
+      companySelect.value = preselectedCompany;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('pay-date');
+    if (dateInput) dateInput.value = today;
+
+    // Reset fields
+    const amountInput = document.getElementById('pay-amount');
+    if (amountInput) amountInput.value = '';
+
+    const refInput = document.getElementById('pay-ref');
+    if (refInput) refInput.value = '';
+
+    const remInput = document.getElementById('pay-remarks');
+    if (remInput) remInput.value = '';
+
+    this.onSettlementModeChange('slip_wise');
+    this.onPaymentCompanyChange();
+    this.openModal('modal-payment');
+  },
+
+  onPaymentCompanyChange: function() {
+    const company = document.getElementById('pay-company-select')?.value;
+    if (!company) return;
+
+    const summary = FleetDB.getPartySummary(company);
+    const balVal = document.getElementById('pay-curr-balance-val');
+    if (balVal) {
+      balVal.innerText = `₹${summary.balanceDue.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+      balVal.style.color = summary.balanceDue > 0.5 ? 'var(--accent-rose)' : 'var(--accent-emerald)';
+    }
+
+    // Load unpaid/partial slips into settlement table
+    const tbody = document.getElementById('pay-slips-tbody');
+    if (!tbody) return;
+
+    const dueTrips = (this.db.trips || []).filter(t => t.companyName === company && t.truckTon > 0 && t.paymentStatus !== 'paid');
+
+    if (dueTrips.length === 0) {
+      const msg = this.currentLang === 'gu'
+        ? 'આ પાર્ટીની તમામ કાંટા સ્લીપો ચૂકતે છે! કોઈ બાકી સ્લીપ નથી.'
+        : 'All slips for this party are fully settled! No pending slips.';
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-dim);">${msg}</td></tr>`;
+      this.updateAllocationSummary();
+      return;
+    }
+
+    tbody.innerHTML = dueTrips.map(t => {
+      const balance = t.remainingBalance || t.totalAmount;
+      return `
+        <tr id="pay-slip-row-${t.id}">
+          <td style="text-align:center;">
+            <input type="checkbox" class="pay-slip-cb" id="pay-cb-${t.id}" value="${t.id}" data-slip="${t.serialNo}" data-balance="${balance}" onchange="App.onSlipRowToggle(this, ${balance}, '${t.id}')">
+          </td>
+          <td>${t.date}</td>
+          <td style="font-weight:700; color:var(--accent-blue);">${t.serialNo}</td>
+          <td>${t.loadingAddress} &rarr; ${t.unloadingAddress}</td>
+          <td style="text-align:right;">₹${t.totalAmount.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+          <td style="text-align:right; color:var(--accent-emerald);">₹${(t.paidAmount || 0).toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+          <td style="text-align:right; font-weight:700; color:var(--accent-rose);">₹${balance.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+          <td style="text-align:right;">
+            <input type="number" step="0.01" min="0" max="${balance}" class="alloc-input" id="alloc-trip-${t.id}" value="0" oninput="App.onSlipAllocationInputChange('${t.id}')">
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    this.updateAllocationSummary();
+  },
+
+  onSettlementModeChange: function(mode) {
+    this.settlementMode = mode;
+
+    const pillSlips = document.getElementById('pill-settle-slips');
+    const pillLump = document.getElementById('pill-settle-lump');
+    const radioSlips = pillSlips?.querySelector('input[type="radio"]');
+    const radioLump = pillLump?.querySelector('input[type="radio"]');
+
+    if (mode === 'slip_wise') {
+      pillSlips?.classList.add('active');
+      pillLump?.classList.remove('active');
+      if (radioSlips) radioSlips.checked = true;
+    } else {
+      pillLump?.classList.add('active');
+      pillSlips?.classList.remove('active');
+      if (radioLump) radioLump.checked = true;
+    }
+
+    const containerSlips = document.getElementById('settlement-slips-container');
+    const containerLump = document.getElementById('settlement-lump-container');
+
+    if (containerSlips) containerSlips.style.display = mode === 'slip_wise' ? 'block' : 'none';
+    if (containerLump) containerLump.style.display = mode === 'lump_sum' ? 'block' : 'none';
+  },
+
+  onPaymentAmountChange: function() {
+    this.updateAllocationSummary();
+  },
+
+  autoDistributePaymentAmount: function() {
+    const amountVal = parseFloat(document.getElementById('pay-amount')?.value) || 0;
+    if (amountVal <= 0) {
+      alert(this.currentLang === 'gu' ? 'કૃપા કરીને પહેલા મળેલ રકમ દાખલ કરો!' : 'Please enter received payment amount first!');
+      document.getElementById('pay-amount')?.focus();
+      return;
+    }
+
+    let remainingToAllocate = amountVal;
+    const checkboxes = document.querySelectorAll('.pay-slip-cb');
+
+    checkboxes.forEach(cb => {
+      const tripId = cb.value;
+      const balance = parseFloat(cb.getAttribute('data-balance')) || 0;
+      const input = document.getElementById(`alloc-trip-${tripId}`);
+
+      if (remainingToAllocate > 0 && balance > 0) {
+        const allocateNow = Math.min(remainingToAllocate, balance);
+        cb.checked = true;
+        if (input) input.value = allocateNow.toFixed(2);
+        remainingToAllocate -= allocateNow;
+      } else {
+        cb.checked = false;
+        if (input) input.value = '0';
+      }
+    });
+
+    this.updateAllocationSummary();
+  },
+
+  toggleAllSlipAllocations: function(selectAll) {
+    const checkboxes = document.querySelectorAll('.pay-slip-cb');
+    checkboxes.forEach(cb => {
+      cb.checked = selectAll;
+      const tripId = cb.value;
+      const balance = parseFloat(cb.getAttribute('data-balance')) || 0;
+      const input = document.getElementById(`alloc-trip-${tripId}`);
+      if (input) input.value = selectAll ? balance.toFixed(2) : '0';
+    });
+    this.updateAllocationSummary();
+  },
+
+  onSlipRowToggle: function(checkbox, fullBalance, tripId) {
+    const input = document.getElementById(`alloc-trip-${tripId}`);
+    if (input) {
+      input.value = checkbox.checked ? fullBalance.toFixed(2) : '0';
+    }
+    this.updateAllocationSummary();
+  },
+
+  onSlipAllocationInputChange: function(tripId) {
+    const input = document.getElementById(`alloc-trip-${tripId}`);
+    const cb = document.getElementById(`pay-cb-${tripId}`);
+    const val = parseFloat(input?.value) || 0;
+    if (cb) {
+      cb.checked = val > 0;
+    }
+    this.updateAllocationSummary();
+  },
+
+  updateAllocationSummary: function() {
+    const received = parseFloat(document.getElementById('pay-amount')?.value) || 0;
+    let allocatedTotal = 0;
+
+    document.querySelectorAll('.alloc-input').forEach(inp => {
+      allocatedTotal += parseFloat(inp.value) || 0;
+    });
+
+    const unallocated = Math.max(0, received - allocatedTotal);
+
+    const elRecv = document.getElementById('alloc-sum-received');
+    if (elRecv) elRecv.innerText = `₹${received.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+
+    const elAlloc = document.getElementById('alloc-sum-allocated');
+    if (elAlloc) elAlloc.innerText = `₹${allocatedTotal.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+
+    const elUnalloc = document.getElementById('alloc-sum-unallocated');
+    if (elUnalloc) elUnalloc.innerText = `₹${unallocated.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+  },
+
+  savePayment: function(event) {
+    event.preventDefault();
+    const company = document.getElementById('pay-company-select').value;
+    const date = document.getElementById('pay-date').value;
+    const amount = parseFloat(document.getElementById('pay-amount').value) || 0;
+    const mode = document.getElementById('pay-mode').value;
+    const refNo = document.getElementById('pay-ref').value;
+    const remarks = document.getElementById('pay-remarks').value;
+
+    if (amount <= 0) {
+      alert(this.currentLang === 'gu' ? 'કૃપા કરીને માન્ય રકમ દાખલ કરો!' : 'Please enter a valid received amount!');
+      return;
+    }
+
+    const allocations = [];
+
+    if (this.settlementMode === 'slip_wise') {
+      document.querySelectorAll('.pay-slip-cb:checked').forEach(cb => {
+        const tripId = cb.value;
+        const slipNo = cb.getAttribute('data-slip');
+        const input = document.getElementById(`alloc-trip-${tripId}`);
+        const allocatedVal = parseFloat(input?.value) || 0;
+        if (allocatedVal > 0) {
+          allocations.push({
+            tripId,
+            slipNo,
+            allocatedAmount: allocatedVal
+          });
+        }
+      });
+
+      if (allocations.length === 0) {
+        const confirmLump = confirm(this.currentLang === 'gu'
+          ? 'તમે કોઈ ચોક્કસ સ્લીપ પસંદ કરી નથી. શું તમે આ રકમ એક સામટી ખાતા પેટે જમા કરવા માંગો છો?'
+          : 'No specific slips selected for allocation. Record this payment as Lump-Sum On-Account credit?');
+        if (!confirmLump) return;
+      }
+    } else {
+      // Lump sum mode
+      const autoFifo = document.getElementById('pay-auto-fifo')?.checked;
+      if (autoFifo) {
+        let unallocated = amount;
+        const dueTrips = (this.db.trips || [])
+          .filter(t => t.companyName === company && t.truckTon > 0 && t.paymentStatus !== 'paid')
+          .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+        for (const t of dueTrips) {
+          if (unallocated <= 0) break;
+          const remaining = t.remainingBalance || t.totalAmount;
+          if (remaining > 0) {
+            const allocateNow = Math.min(unallocated, remaining);
+            allocations.push({
+              tripId: t.id,
+              slipNo: t.serialNo,
+              allocatedAmount: allocateNow
+            });
+            unallocated -= allocateNow;
+          }
+        }
+      }
+    }
+
+    const paymentEntry = {
+      id: 'PAY-' + Date.now().toString().slice(-6),
+      date,
+      companyName: company,
+      amount,
+      mode,
+      refNo,
+      settlementType: this.settlementMode,
+      allocations,
+      remarks
+    };
+
+    FleetDB.addPayment(paymentEntry);
+    this.db = FleetDB.get();
+    this.closeModals();
+    this.renderCurrentView();
+
+    const isGu = this.currentLang === 'gu';
+    alert(isGu
+      ? `રૂ. ${amount.toLocaleString('en-IN')} નું પેમેન્ટ સફળતાપૂર્વક જમા કરવામાં આવ્યું.`
+      : `Payment of ₹${amount.toLocaleString('en-IN')} recorded & settled successfully!`);
+  },
+
+  deletePayment: function(id) {
+    const isGu = this.currentLang === 'gu';
+    const confirmDelete = confirm(isGu
+      ? 'શું તમે ખરેખર આ પેમેન્ટ રસીદ ડિલીટ કરવા માંગો છો? આનાથી સંબંધિત કાંટા સ્લીપોની બાકી રકમ ફરીથી સેટ થઈ જશે.'
+      : 'Are you sure you want to delete this payment receipt? Slip balances will be restored.');
+    if (!confirmDelete) return;
+
+    FleetDB.deletePayment(id);
+    this.db = FleetDB.get();
+    this.renderCurrentView();
+  },
+
+  generateWhatsAppPartyStatement: function(companyName) {
+    const summary = FleetDB.getPartySummary(companyName);
+    const config = this.db.config;
+    const isGu = this.currentLang === 'gu';
+
+    let unpaidList = '';
+    const pendingSlips = summary.trips.filter(t => t.paymentStatus !== 'paid');
+
+    if (pendingSlips.length > 0) {
+      pendingSlips.forEach((t, i) => {
+        unpaidList += isGu
+          ? `${i + 1}. સ્લીપ *#${t.serialNo}* (${t.date}) - બાકી: *₹${t.remainingBalance.toLocaleString('en-IN')}*\n   • રૂટ: ${t.loadingAddress} → ${t.unloadingAddress} (${t.truckTon.toFixed(2)} MT)\n`
+          : `${i + 1}. Slip *#${t.serialNo}* (${t.date}) - Due: *₹${t.remainingBalance.toLocaleString('en-IN')}*\n   • Route: ${t.loadingAddress} → ${t.unloadingAddress} (${t.truckTon.toFixed(2)} MT)\n`;
+      });
+    } else {
+      unpaidList = isGu ? '✅ તમામ કાંટા સ્લીપો સંપૂર્ણપણે ચૂકતે છે (કોઈ બાકી નથી).' : '✅ All weighment slips are fully settled.';
+    }
+
+    const msg = isGu ?
+`*${config.transporterName.toUpperCase()}*
+${config.headOffice}
+📞 ${config.phone}
+━━━━━━━━━━━━━━━━━━━━━━━
+📋 *ગ્રાહક ખાતાવહી સ્ટેટમેન્ટ (બાકી રકમ હિસાબ)*
+*પાર્ટી / કંપની:* ${companyName}
+*સ્ટેટમેન્ટ તારીખ:* ${new Date().toLocaleDateString('en-IN')}
+━━━━━━━━━━━━━━━━━━━━━━━
+📊 *ખાતાવહી સારાંશ:*
+• કુલ ટ્રીપો: *${summary.tripsCount} Trips*
+• પહોંચાડેલ વજન: *${summary.totalTonnage.toFixed(2)} MT*
+• કુલ બિલ ભાડું: *₹${summary.totalBilled.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+• જમા થયેલ રકમ: *₹${summary.totalReceived.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+👉 *ચોખ્ખી બાકી રકમ (ચૂકવવાપાત્ર): ₹${summary.balanceDue.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+📑 *બાકી કાંટા સ્લીપોની યાદી:*
+${unpaidList}
+તમામ કાંટા સ્લીપો વેરિફાઇ થયેલ છે. કૃપા કરીને ઉપરોક્ત બાકી રકમ જલ્દીથી ચૂકવવા વિનંતી. આભાર!`
+:
+`*${config.transporterName.toUpperCase()}*
+${config.headOffice}
+📞 ${config.phone}
+━━━━━━━━━━━━━━━━━━━━━━━
+📋 *CUSTOMER ACCOUNT STATEMENT (OUTSTANDING DUES)*
+*Party / Company:* ${companyName}
+*Statement Date:* ${new Date().toLocaleDateString()}
+━━━━━━━━━━━━━━━━━━━━━━━
+📊 *ACCOUNT SUMMARY:*
+• Total Completed Trips: *${summary.tripsCount} Trips*
+• Delivered Tonnage: *${summary.totalTonnage.toFixed(2)} MT*
+• Total Freight Billed: *₹${summary.totalBilled.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+• Total Payments Received: *₹${summary.totalReceived.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+👉 *CURRENT OUTSTANDING BALANCE: ₹${summary.balanceDue.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+📑 *UNPAID / PARTIAL SLIPS BREAKDOWN:*
+${unpaidList}
+Please review this statement and clear the outstanding payment. Thank you!`;
+
+    this.activeWhatsAppMessage = msg;
+    const phoneInput = document.getElementById('wa-phone-input');
+    if (phoneInput) phoneInput.value = '91';
+    const preview = document.getElementById('wa-message-preview');
+    if (preview) preview.innerText = msg;
+    this.openModal('modal-whatsapp');
   },
 
   generateWhatsAppBillForSelectedCompany: function() {
@@ -1515,6 +2123,49 @@ Please confirm and clear payment. Thank you!`;
             <td style="color:var(--accent-emerald); font-size:14px;">₹${(totalRevenue - totalDieselRs).toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
           </tr>
         `;
+      } else if (this.reportType === 'dues') {
+        const isGu = this.currentLang === 'gu';
+        if (titleEl) titleEl.innerText = isGu ? `💰 ગ્રાહક ખાતાવહી અને બાકી રકમ હિસાબ` : `💰 Customer Accounts & Outstanding Dues Ledger`;
+        if (subEl) subEl.innerText = isGu ? `કુલ બિલ, જમા રકમ અને બાકી લેણી રકમનો રીઅલ-ટાઇમ હિસાબ` : `Summary of Total Billed, Total Payments Received & Balance Pending per Customer`;
+        thead.innerHTML = `
+          <tr>
+            <th>${isGu ? 'પાર્ટી / કંપનીનું નામ' : 'Party / Company Name'}</th>
+            <th style="text-align:center;">${isGu ? 'ટ્રીપો' : 'Trips'}</th>
+            <th style="text-align:right;">${isGu ? 'કુલ વજન (MT)' : 'Delivered Tons'}</th>
+            <th style="text-align:right;">${isGu ? 'કુલ બિલ (₹)' : 'Total Billed (₹)'}</th>
+            <th style="text-align:right;">${isGu ? 'જમા રકમ (₹)' : 'Received (₹)'}</th>
+            <th style="text-align:right;">${isGu ? 'ચોખ્ખી બાકી (₹)' : 'Balance Due (₹)'}</th>
+            <th style="text-align:center;">${isGu ? 'સ્ટેટસ' : 'Status'}</th>
+          </tr>
+        `;
+        const summaries = FleetDB.getAllPartiesSummary();
+        const totalBilledAll = summaries.reduce((s, p) => s + p.totalBilled, 0);
+        const totalRecvAll = summaries.reduce((s, p) => s + p.totalReceived, 0);
+        const totalDueAll = summaries.reduce((s, p) => s + p.balanceDue, 0);
+
+        tbody.innerHTML = summaries.map(p => `
+          <tr>
+            <td style="font-weight:700; color:var(--text-main);">${p.companyName}</td>
+            <td style="text-align:center;">${p.tripsCount}</td>
+            <td style="text-align:right;">${p.totalTonnage.toFixed(2)} MT</td>
+            <td style="text-align:right; font-weight:600;">₹${p.totalBilled.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+            <td style="text-align:right; color:var(--accent-emerald); font-weight:700;">₹${p.totalReceived.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+            <td style="text-align:right; font-weight:800; color:${p.balanceDue > 0.5 ? 'var(--accent-rose)' : 'var(--text-muted)'};">
+              ₹${p.balanceDue.toLocaleString('en-IN', {maximumFractionDigits:2})}
+            </td>
+            <td style="text-align:center;">
+              ${p.balanceDue <= 0.5 ? '<span class="badge-status-paid">✔ All Cleared</span>' : `<span class="badge-status-unpaid">⏳ ₹${p.balanceDue.toLocaleString('en-IN')} Due</span>`}
+            </td>
+          </tr>
+        `).join('') + `
+          <tr style="background:var(--bg-tertiary); font-weight:800; border-top:2px solid var(--border-color);">
+            <td colspan="3">${isGu ? 'કુલ બાકી રકમ (તમામ પાર્ટીઓ)' : 'TOTAL RECEIVABLES ACROSS ALL PARTIES'}</td>
+            <td style="text-align:right;">₹${totalBilledAll.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+            <td style="text-align:right; color:var(--accent-emerald);">₹${totalRecvAll.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+            <td style="text-align:right; color:var(--accent-rose); font-size:14px;">₹${totalDueAll.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+            <td style="text-align:center;">-</td>
+          </tr>
+        `;
       }
     }
 
@@ -1685,6 +2336,51 @@ ${headOffice}
 ━━━━━━━━━━━━━━━━━━━━━━━
 Generated via FleetTrack Pro
 Date: ${new Date().toLocaleDateString('en-IN')}`;
+      }
+    } else if (this.reportType === 'dues') {
+      const summaries = FleetDB.getAllPartiesSummary();
+      const totalDueAll = summaries.reduce((s, p) => s + p.balanceDue, 0);
+      let partyListText = '';
+      summaries.forEach((s, i) => {
+        const statusText = s.balanceDue <= 0.5 ? '✅ ચૂકતે (₹0)' : `⚠️ બાકી: *₹${s.balanceDue.toLocaleString('en-IN')}*`;
+        const statusTextEn = s.balanceDue <= 0.5 ? '✅ Cleared (₹0)' : `⚠️ Due: *₹${s.balanceDue.toLocaleString('en-IN')}*`;
+        partyListText += isGu
+          ? `${i + 1}. *${s.companyName}*\n   • બિલ: ₹${s.totalBilled.toLocaleString('en-IN')} | જમા: ₹${s.totalReceived.toLocaleString('en-IN')}\n   • ${statusText} (${s.unpaidSlipsCount} સ્લીપ)\n`
+          : `${i + 1}. *${s.companyName}*\n   • Billed: ₹${s.totalBilled.toLocaleString('en-IN')} | Recv: ₹${s.totalReceived.toLocaleString('en-IN')}\n   • ${statusTextEn} (${s.unpaidSlipsCount} Slips)\n`;
+      });
+
+      if (isGu) {
+        msg = 
+`*${transporterName.toUpperCase()}*
+${headOffice}
+📞 સંપર્ક: ${phone}
+━━━━━━━━━━━━━━━━━━━━━━━
+💰 *ગ્રાહક ખાતાવહી અને કુલ બાકી રકમ હિસાબ*
+🗓️ *તારીખ:* ${new Date().toLocaleDateString('en-IN')}
+━━━━━━━━━━━━━━━━━━━━━━━
+📊 *કુલ સરવૈયું:*
+• સક્રિય ગ્રાહકો: *${summaries.length} Parties*
+👉 *કુલ બાકી લેણી રકમ: ₹${totalDueAll.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+📑 *પાર્ટી વાઇઝ બાકી વિગત:*
+${partyListText}
+Generated via FleetTrack Pro`;
+      } else {
+        msg = 
+`*${transporterName.toUpperCase()}*
+${headOffice}
+📞 Contact: ${phone}
+━━━━━━━━━━━━━━━━━━━━━━━
+💰 *CUSTOMER ACCOUNTS & OUTSTANDING DUES LEDGER*
+🗓️ *Date:* ${new Date().toLocaleDateString()}
+━━━━━━━━━━━━━━━━━━━━━━━
+📊 *RECEIVABLES OVERVIEW:*
+• Active Customer Accounts: *${summaries.length} Parties*
+👉 *TOTAL OUTSTANDING RECEIVABLES: ₹${totalDueAll.toLocaleString('en-IN', {maximumFractionDigits:2})}*
+━━━━━━━━━━━━━━━━━━━━━━━
+📑 *PARTY-WISE BREAKDOWN:*
+${partyListText}
+Generated via FleetTrack Pro`;
       }
     }
 

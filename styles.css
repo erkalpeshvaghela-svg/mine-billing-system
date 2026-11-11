@@ -863,6 +863,154 @@ body {
   gap: 16px;
 }
 
+/* Party Billing & Settlement Styles */
+.billing-kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.billing-kpi-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.billing-kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+.billing-kpi-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+.billing-kpi-val.income { color: var(--accent-emerald); }
+.billing-kpi-val.warning { color: var(--accent-rose); }
+.billing-kpi-val.accent { color: var(--accent-gold); }
+
+.billing-subtabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  overflow-x: auto;
+}
+.billing-subtab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.billing-subtab-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-main);
+  border-color: var(--accent-gold);
+}
+.billing-subtab-btn.active {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05));
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+/* Payment Status Badges */
+.badge-status-paid {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.badge-status-partial {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: var(--accent-gold);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.badge-status-unpaid {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: var(--accent-rose);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Settlement Type Pills */
+.settlement-type-pill {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 14px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.settlement-type-pill:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--accent-gold);
+}
+.settlement-type-pill.active {
+  background-color: rgba(245, 158, 11, 0.12);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 1px var(--accent-gold);
+}
+.settlement-type-pill input[type="radio"] {
+  accent-color: var(--accent-gold);
+}
+
+.alloc-input {
+  width: 95px;
+  padding: 4px 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: right;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  color: var(--text-main);
+}
+.alloc-input:focus {
+  border-color: var(--accent-gold);
+  outline: none;
+}
+
 @media (max-width: 1080px) {
   .report-split-grid {
     grid-template-columns: 1fr;
@@ -1241,6 +1389,11 @@ body {
   .report-kpi-bar {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .billing-kpi-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
 }
 
 /* Extra small mobile (<= 480px) */
@@ -1249,6 +1402,9 @@ body {
     grid-template-columns: 1fr;
   }
   .report-kpi-bar {
+    grid-template-columns: 1fr;
+  }
+  .billing-kpi-bar {
     grid-template-columns: 1fr;
   }
   .month-tabs-bar {
